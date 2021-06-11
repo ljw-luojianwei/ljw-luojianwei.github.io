@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;leroy-github.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概览利用了V4L2可扩展这一特性，高通在相机驱动部分实现了自有的一套KMD框架，该框架通过V4L2标准方法在系统中创建设备节点，将控制接口直接暴露给UMD CSL进行访问，而其内部主要定义了一系列核心模块，包括CRM(Camera Request Manager)，用于管理整个KMD的Session&#x2F;Link的创建销毁以及Request的在子设备间的流转，该模块创建video0设备节点暴露关键接口">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Camera 体系结构之九 相机驱动层–高通KMD框架详解">
+<meta property="og:url" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="罗建伟的个人博客">
+<meta property="og:description" content="概览利用了V4L2可扩展这一特性，高通在相机驱动部分实现了自有的一套KMD框架，该框架通过V4L2标准方法在系统中创建设备节点，将控制接口直接暴露给UMD CSL进行访问，而其内部主要定义了一系列核心模块，包括CRM(Camera Request Manager)，用于管理整个KMD的Session&#x2F;Link的创建销毁以及Request的在子设备间的流转，该模块创建video0设备节点暴露关键接口">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/sub.dev.jpg">
+<meta property="article:published_time" content="2021-06-11T07:03:20.000Z">
+<meta property="article:modified_time" content="2021-06-11T07:05:06.568Z">
+<meta property="article:author" content="罗建伟">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/sub.dev.jpg">
+
+
+<link rel="canonical" href="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;leroy-github.github.io&#x2F;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-体系结构之九-相机驱动层–高通KMD框架详解&#x2F;&quot;,&quot;title&quot;:&quot;Android Camera 体系结构之九 相机驱动层–高通KMD框架详解&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android Camera 体系结构之九 相机驱动层–高通KMD框架详解 | 罗建伟的个人博客</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人博客</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%A7%88"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A8%A1%E5%9D%97%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">核心模块解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CRM-Camera-Request-Manager"><span class="nav-number">2.1.</span> <span class="nav-text">CRM(Camera Request Manager)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cam-Sync"><span class="nav-number">2.2.</span> <span class="nav-text">Cam Sync</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">模块初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86UMD-CSL%E8%AF%B7%E6%B1%82"><span class="nav-number">4.</span> <span class="nav-text">处理UMD CSL请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%A8%A1%E5%9D%97%E8%B5%84%E6%BA%90"><span class="nav-number">4.1.</span> <span class="nav-text">获取模块资源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E5%BC%80Session"><span class="nav-number">4.2.</span> <span class="nav-text">打开Session</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E8%AE%BE%E5%A4%87"><span class="nav-number">4.3.</span> <span class="nav-text">打开设备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BALink"><span class="nav-number">4.4.</span> <span class="nav-text">创建Link</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="nav-number">4.5.</span> <span class="nav-text">开启数据流</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E5%8F%91Request"><span class="nav-number">4.6.</span> <span class="nav-text">下发Request</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%90%E8%AE%BE%E5%A4%87%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE"><span class="nav-number">4.7.</span> <span class="nav-text">子设备处理数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AE%8C%E6%88%90"><span class="nav-number">4.8.</span> <span class="nav-text">数据操作完成</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟</p>
+  <div class="site-description" itemprop="description">明确自己的内心所求，才能更好地解决问题</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟">
+      <meta itemprop="description" content="明确自己的内心所求，才能更好地解决问题">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android Camera 体系结构之九 相机驱动层–高通KMD框架详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-06-11 15:03:20 / 修改时间：15:05:06" itemprop="dateCreated datePublished" datetime="2021-06-11T15:03:20+08:00">2021-06-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Camera/" itemprop="url" rel="index"><span itemprop="name">Camera</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h3><p style="text-indent:2em">利用了V4L2可扩展这一特性，高通在相机驱动部分实现了自有的一套KMD框架，该框架通过V4L2标准方法在系统中创建设备节点，将控制接口直接暴露给UMD CSL进行访问，而其内部主要定义了一系列核心模块，包括CRM(Camera Request Manager)，用于管理整个KMD的Session/Link的创建销毁以及Request的在子设备间的流转，该模块创建video0设备节点暴露关键接口给UMD，此外还包括了Sync模块，主要负责了UMD/KMD之间的数据同步与传输，创建video1设备节点暴露接口给UMD进行访问，除此之外，为了更精细化地控制一系列的硬件图像处理模块，包括ISP/IPE/Sensor等硬件模块，高通也分别为各自子模块创建了设备节点，进而暴露控制接口给UMD进行访问。</p>
+
+<p style="text-indent:2em">其中主要目录如下：</p>
+
+<ul>
+<li><p>cam_core/： 关于KMD核心函数的实现都放在这，主要包括了subdev、node、context的一些诸如创建/注册/销毁等标准方法。</p>
+</li>
+<li><p>cam_req_mgr/: CRM的具体实现，用于创建v4l2_device，用于管理所有的子设备，同时生成video设备节点，暴露控制接口给UMD，主要包括了Session/Link的行为管理以及Request的同步与分发，此外，还创建了media_device，用于暴露枚举接口给UMD来轮询查找整个KMD的子设备。</p>
+</li>
+<li><p>cam_sync/: 该部分主要实现了用于保持与UMD的图像数据的同步相关业务逻辑，由于该模块的特殊性，高通直接为其创建了一个单独的video设备节点，暴露了用于同步的一些控制接口。</p>
+</li>
+<li><p>cam_utils/: 一些共有方法的实现，包括debug方法集等</p>
+</li>
+<li><p>cam_smmu/: 高通自己实现了一套smmu api，供KMD使用</p>
+</li>
+<li><p>cam_lrme/: 低分辨率运动估计模块的驱动实现</p>
+</li>
+<li><p>cam_fd/: 人脸识别的驱动程序</p>
+</li>
+<li><p>cam_isp/: isp的驱动程序</p>
+</li>
+<li><p>cam_jpeg/: 编码器，可以通过该驱动完成jpeg的编码工作</p>
+</li>
+<li><p>cam_cdm/: camera data mover，数据移动器的驱动实现，主要用于解析由CSL传入的命令信息，其中包括了寄存器的设置以及图像数据的处理等。</p>
+</li>
+<li><p>cam_cpas/: 该模块主要用于CSL获取camera 平台驱动信息，IPE/BPS电源控制等</p>
+</li>
+<li><p>cam_icp/: image control processor ，图像处理控制器驱动实现</p>
+</li>
+<li><p>cam_hyp_intf/: Hypervisor 模块接口驱动程序实现</p>
+</li>
+<li><p>cam_sensor_module/: 类传感器的系列硬件模块</p>
+</li>
+<li><ul>
+<li>cam_actuator/: 对焦马达的驱动实现</li>
+<li>cam_cci/: 实现了用于通讯的CCI接口，其中包括了I2C以及gpio的实现</li>
+<li>cam_csiphy: 基于MIPI CSI接口的物理层驱动，用于传输图像数据</li>
+<li>cam_sensor_io: 使用cam_cci，向上实现了控制sensor的IO接口</li>
+<li>cam_sensor: sensor 的驱动实现</li>
+<li>cam_sensor_util: sensor相关的公有方法的实现</li>
+<li>cam_eeprom: eeprom设备的驱动实现</li>
+<li>cam_ois: 光学防抖设备的驱动实现</li>
+<li>cam_flash: 闪光灯设备的驱动实现</li>
+</ul>
+</li>
+</ul>
+<h3 id="核心模块解析"><a href="#核心模块解析" class="headerlink" title="核心模块解析"></a>核心模块解析</h3><p style="text-indent:2em">正如之前介绍的那样，整个框架主要由三个部分组成，CRM/Camera Sync以及子模块，接下来我们以下图为例简单讲解下各自的关系：</p>
+
+<p><img src="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/sub.dev.jpg" alt="sub.dev"></p>
+<p style="text-indent:2em">在系统初始化时，CRM内部会创建一个v4l2_device结构体，用于管理所有的子设备，与此同时每一个子设备在注册的时候都会创建各自的v4l2_subdev挂载到该v4l2_device上面。此外，CRM会创建一个video0设备节点提供关键接口给CSL来进行访问，而每个子设备也会在系统中生成各自的v4l2-sbudev设备节点，提供接口给CSL进行更为精细化的控制。而其中的Cam Sync在初始化的过程中，也创建了一个v4l2_device设备，并且生成了video1节点给CSL进行控制。这个框架主要就是围绕这三个部分进行的，CRM用于管理Session/Link的创建，控制Request在各个子设备中的流转，子设备受CSL控制进行配置以及图像处理工作，而一旦图像处理完成便会将结果发送至Cam Sync模块，进上传至CSL中。</p>
+
+<h4 id="CRM-Camera-Request-Manager"><a href="#CRM-Camera-Request-Manager" class="headerlink" title="CRM(Camera Request Manager)"></a>CRM(Camera Request Manager)</h4><p style="text-indent:2em">该模块本质上是一个软件模块，主要做了以下几个事情：</p>
+
+<ul>
+<li>接收来自CSL的Session/Link/Request请求，并且维护其在内核的状态。</li>
+<li>在不同pipeline delay的子模块间，同步每一个Request状态，并按照需要发送给每一个子设备。</li>
+<li>如果出现错误，负责上传至CSL。</li>
+<li>负责针对实时子模块的flush操作。</li>
+</ul>
+<p style="text-indent:2em">其中针对Session/Link/Request的请求便是通过之前创建的video设备节点将接口暴露给CSL，一旦接收到命令便开始进行处理，而命令主要有以下几个：</p>
+
+<ul>
+<li>CAM_REQ_MGR_CREATE_SESSION/CAM_REQ_MGR_DESTROY_SESSION： 分别表示了Session的创建和销毁，该Session保持着与CamX-CHI的一一对应关系。</li>
+<li>CAM_REQ_MGR_LINK/CAM_REQ_MGR_UNLINK： 分别表示了Link的创建和销毁动作，每一个Session可以包含多条Link，而每一个Link都连接着此次图像采集过程中所需要的子设备，CRM也是通过该Link来管理Request同步与分发的操作。</li>
+<li>CAM_REQ_MGR_SCHED_REQ：一旦CSL开始下发Request的时候，便可以通过该命令告知KMD，而在KMD中，CRM会将此次Request存入Link中的in_q数组中，当子设备告知准备好了此次Request的处理后，便通知子设备进行配置并处理Request。</li>
+<li>CAM_REQ_MGR_ALLOC_BUF/CAM_REQ_MGR_RELEASE_BUF: 图像缓冲区的申请与释放，CRM中使用cam_mem_table结构体来管理着申请的缓冲区。</li>
+</ul>
+<p style="text-indent:2em">一旦CRM接收了来自CSL的请求，便会在内部进行处理，而其中的一系列业务处理便会通过接下来的几个结构体来完成：</p>
+
+<p style="text-indent:2em">首先在初始化过程中，会去创建一个cam_req_mgr_device。该结构体有以下几个主要的成员：</p>
+
+<ul>
+<li>video: 存储着对应的video_device。</li>
+<li>v4l2_dev: 保存着初始化过程中创建的v4l2_device。</li>
+<li>subdev_nodes_created: 标志着从属于v4l2_device的子设备是否都成功创建了设备节点。</li>
+<li>cam_eventq： v4l2文件描述结构体，其中维护着event事件队列。</li>
+</ul>
+<p style="text-indent:2em">之后会去创建一个cam_req_mgr_core_device，该结构体比较简单主要用于维护一个Session链表，在CSL下发创建Session的动作后，会将创建好的Session放入该量表中，同时通过crm_lock保持着业务处理中的同步。</p>
+
+<p style="text-indent:2em">一个Session可以包含很多条Link，其中变量num_links存储了Link数量，数组links存储着所有link，entry变量作为当前session的实体可以嵌入cam_req_mgr_core_device中的session链表中进行统一管理。</p>
+
+<p style="text-indent:2em">在CSL下发CAM_REQ_MGR_LINK命令的时候，会去创建cam_req_mgr_core_link。</p>
+
+<p style="text-indent:2em">该结构体比较复杂，接下来我们主要介绍下几个主要的变量：</p>
+
+<ul>
+<li>link_hdl：作为该Link的句柄，区别于其它Link。</li>
+<li>num_devs： 表示了该条Link上连接了多少个子设备。</li>
+<li>max_delay： 表示了从属于该Link上的所有子设备具有的最大的Pipeline delay值。</li>
+<li>l_dev： 存储着所有从属于该Link上的子设备，后续对于子设备的控制都是通过该数组来进行的。</li>
+<li>req： 该成员主要用于管理下发的request。</li>
+<li>state: 标志着该Link的状态，而Link状态主要包括了CAM_CRM_LINK_STATE_AVAILABLE/CAM_CRM_LINK_STATE_IDLE/CAM_CRM_LINK_STATE_READY/CAM_CRM_LINK_STATE_ERR几种状态。</li>
+</ul>
+<p style="text-indent:2em">创建完Link之后，会将其存入一个存储cam_req_mgr_core_link的全局变量g_links中进行统一管理。</p>
+
+<p style="text-indent:2em">而当下发CAM_REQ_MGR_SCHED_REQ命令的时候，会在内部进行解析，并且将其存入cam_req_mgr_core_link中的cam_req_mgr_req_data中等待后续的流转。</p>
+
+<p style="text-indent:2em">其中in_q变量主要用于存储request，而l_tbl用于记录pipeline delay的相关信息，而apply_data数组用于存储所有的等待处理的request信息。</p>
+
+<h4 id="Cam-Sync"><a href="#Cam-Sync" class="headerlink" title="Cam Sync"></a>Cam Sync</h4><p style="text-indent:2em">该模块本质上是一个软件模块，用于保持与UMD的图像数据的同步，主要利用了V4L2框架的event机制，由CSL进行事件的等待，一旦数据处理完毕，该模块便可以向上层发送事件，进而，通知CSL取出数据进行下一步处理，其中包括了几个主要ioctl的命令：</p>
+
+<ul>
+<li>CAM_SYNC_CREATE: 一旦CSL部分需要创建一个用于同步的实体的时候便下发该命令，而在Cam Sync中，会将传入的信息存入内部的sync_table_row数组中进行管理，并且将生成的sync_obj传入上层。</li>
+<li>CAM_SYNC_DESTROY： 销毁用于同步的sync实体。</li>
+<li>CAM_SYNC_REGISTER_PAYLOAD： 通过该命令将一些同步的回调方法注册到Cam Sync中，这样一但当数据处理完成，Cam Sync便可以由之前创建的sync_obj来找到相应的回调方法，进而调用该回调方法进行后续处理。</li>
+<li>CAM_SYNC_DEREGISTER_PAYLOAD：释放之前注册的相关同步实体的信息，包括其回调方法。</li>
+<li>CAM_SYNC_SIGNAL：该命令主要用于CamX-CHI中软件Node处理完数据之后，通知Cam Sync进行后续处理的目的。</li>
+</ul>
+<p style="text-indent:2em">其中包括了几个比较重要的结构体，首先在初始化过程中会去创建sync_device结构体，其主要的几个变量如下：</p>
+
+<ul>
+<li>vdev: 创建的video_device。</li>
+<li>v4l2_dev: 创建的v4l2_device设备。</li>
+<li>sync_table: 用于存储sync_table_row的数组。</li>
+<li>cam_sync_eventq: v4l2设备描述符结构体，其中维护着event事件队列。</li>
+</ul>
+<p style="text-indent:2em">其中最重要的时sync_table中存储的sync_table_row结构体，它代表了整个对应于CSL中的sync object，其中比较重要的变量含义如下：</p>
+
+<ul>
+<li>sync_id：该sync object的唯一标识，同时该标识于CSL保持同步。</li>
+<li>state: 代表了当前sync object的状态。</li>
+<li>user_payload_list： 存储着该sync object所对应的来自UMD的payload，该payload在KMD中并没有被使用，仅仅存储与KMD中，一旦当前sync object被触发，便直接将其再次传入UMD中。</li>
+</ul>
+<h3 id="模块初始化"><a href="#模块初始化" class="headerlink" title="模块初始化"></a>模块初始化</h3><p style="text-indent:2em">在系统启动初期，整个相机驱动中的各个模块都开始进行加载了，接下来我们依次介绍下：</p>
+
+<p style="text-indent:2em">首先是CRM的初始化，按照linux驱动模块的标准方法，会走到module_init宏声明的驱动结构体中的probe方法，这里是cam_req_mgr_probe方法，在该方法中主要做了以下几个事情：</p>
+
+<ul>
+<li>调用cam_v4l2_device_setup方法，创建并向系统注册用于管理所有子设备的v4l2_device。</li>
+<li>调用cam_media_device_setup方法，创建并向系统注册media_device，并且创建了media设备节点，用于CSL枚举KMD中所有设备。</li>
+<li>调用cam_req_mgr_util_init方法，其中初始化了一个cam_req_mgr_util_hdl_tbl，该结构体中存在一个handle数组，而每一个handle主要用于存储Session、Link以及各个子设备的相关信息，后期在整个图像采集的过程中，都是通过该结构体来找对应的操作实体，进而采取相应的动作。</li>
+<li>调用cam_req_mgr_core_device_init方法，该方法中，会去创建并初始化一个cam_req_mgr_core_device结构体，作为全局变量g_crm_core_dev存在于整个框架中，而该结构体中主要包含了用于存储创建的Session的session_head链表，以及用于保护Session临界资源的crm_lock。</li>
+</ul>
+<p style="text-indent:2em">其次，是Cam Sync的初始化，整个流程最终会走到驱动结构体中的probe方法中，这里是cam_sync_probe方法，在该方法中主要做了以下几个事情：</p>
+
+<ul>
+<li>创建sync_dev结构体，该结构中通过一个sync_table_row数组来维护着所有的sync objects。</li>
+<li>调用cam_sync_media_controller_init方法，用于创建media_deivce设备，并且创建了media设备节点，提供给CSL枚举子设备的能力。</li>
+<li>调用v4l2_device_register方法，创建并像系统注册一个v4l2_device结构体，其中用于ioctl的方法集是指向的g_cam_sync_ioctl_ops，一旦CSL有创建/注册sync objects需求的时候，便会最终走到该方法中，从而实现相应的功能。</li>
+<li>调用video_register_device方法，生成video1设备节点，暴露控制接口给CSL。</li>
+<li>调用cam_sync_init_entity方法，将video1中的meida_entity中function字段赋值CAM_SYNC_DEVICE_TYPE，这样在UMD就可以通过相应的media节点枚举出该模块。</li>
+</ul>
+<p style="text-indent:2em">以上两个模块都是具有独立的video设备节点的，但是对于子设备而言，由于代表着相应的硬件设备，同时需要嵌入到整个框架中才能正常运行，所以高通将其抽象成了v4l2_subdev来进行管理，这里主要还是介绍两个比较有代表性的子模块，ISP以及Sensor。</p>
+
+<p style="text-indent:2em">首先来看下ISP的初始化阶段，在其相应的probe方法cam_isp_dev_probe中做了如下几个事情：</p>
+
+<ul>
+<li>调用cam_subdev_probe方法，在该方法中，会去注册一个v4l2_subdev，并且将其挂载到CRM中的v4l2_device上，同时还创建了一个node，并且存入了v4l2_subdev中的token中，方便以后进行读取，另外，将方法集赋值为cam_subdev_ops，最后，创建了该v4l2_subdev内部的media_entity，并且为其function字段赋值为CAM_IFE_DEVICE_TYPE，这样也方便在枚举子设备时分辨出当前节点代表着isp模块。</li>
+<li>调用cam_isp_hw_mgr_init方法，该方法用于初始化isp中的硬件模块。</li>
+<li>调用cam_isp_context_init方法，该方法中会初始化node，在node内部创建一定数量的context，用于后期的状态维护，并且为每一个context都配置了状态机，以及子状态机来用于管理整个isp模块。</li>
+</ul>
+<p style="text-indent:2em">其次来看下Sensor模块的初始化，在其相应的probe方法cam_sensor_driver_i2c_probe中主要做了以下几个事情：</p>
+
+<ul>
+<li>调用cam_sensor_parse_dt方法获取dts中定义的硬件信息。</li>
+<li>调用cam_sensor_init_subdev_params方法，该方法中会创建v4l2_subdev，然后挂载到CRM中的v4l2_device中，并且将sensor的私有方法集cam_sensor_internal_ops赋值给v4l2_subdev结构体中的ops，这样一旦操作相应的子设备节点，便最终会走到该方法集中，关于Sensor的一些操作便可以放到这个里面进行处理。最终将创建的v4l2_subdev中的media_entity中functon赋值为CAM_SENSOR_DEVICE_TYPE，方便CSL进行枚举Sensor设备。</li>
+</ul>
+<p style="text-indent:2em">通过上面的两个子设备的初始化代码梳理，不难发现，并没有进行设备节点的创建，那关于节点的创建动作发生在哪一个阶段呢？ 为了解决这个疑问我们不得不先介绍下linux两个宏定义，一个是module_init，另一个便是late_initcall，两者都是为了声明初始化函数，但是执行时间有一个先后顺序，而late_initcall一般在所有module_init定义的方法都运行完成之后才会被运行，而针对所有子设备的节点的创建便是在这里完成的，在该方法中主要做了以下工作：</p>
+
+<ul>
+<li>调用cam_dev_mgr_create_subdev_nodes方法，而在该方法中会去调用v4l2标准方法v4l2_device_register_subdev_nodes来统一创建挂载在CRM中v4l2_device下的子设备节点。</li>
+</ul>
+<p style="text-indent:2em">至此，整个KMD框架便初始化完成，现在便静静等待CSL下发请求。</p>
+
+<h3 id="处理UMD-CSL请求"><a href="#处理UMD-CSL请求" class="headerlink" title="处理UMD CSL请求"></a>处理UMD CSL请求</h3><p style="text-indent:2em">整个KMD的初始化动作在linux内核启动的时候完成的，要稍早于CamX-CHI整个框架的初始化，所以在CamX-CHI进行初始化的时候，KMD框架的各个资源节点都已准备妥当，接下来我们就以CamX-CHI的初始化开始详细描述下整个KMD处理来自CSL请求的流程。</p>
+
+<ol>
+<li><h4 id="获取模块资源"><a href="#获取模块资源" class="headerlink" title="获取模块资源"></a>获取模块资源</h4></li>
+</ol>
+<p style="text-indent:2em">在CamX-CHI初始化的时候，并不知道内核驱动部分是个什么状态，所以需要打开所有的media设备节点来枚举查询每一个驱动模块。</p>
+
+<p style="text-indent:2em">首先，打开media0，根据CAM_VNODE_DEVICE_TYPE枚举并找到KMD框架中的CRM模块，并调用标准open方法来打开该设备，该动作最终会调用到cam_req_mgr_open方法，该方法主要做了以下几个工作：</p>
+
+<ul>
+<li>调用v4l2_fh_open方法，打开v4l2文件。</li>
+<li>调用cam_mem_mgr_init方法，初始化了内存管理模块，为之后的缓冲区的申请与释放做好准备。</li>
+<li>更新CRM状态为CAM_MEM_MGR_INITIALIZED。</li>
+</ul>
+<p style="text-indent:2em">在打开video0之后，会另起一个线程用于监听video的事件，这样就建立了与底层的双向通讯，而在此之前，需要通过ioctl方法将CSL需要监听的事件下发到驱动层，其中包括以下几个事件：</p>
+
+<ul>
+<li>V4L_EVENT_CAM_REQ_MGR_SOF/V4L_EVENT_CAM_REQ_MGR_SOF_BOOT_TS： 一旦底层产生的SOF事件，便会向CSL发送该事件。</li>
+<li>V4L_EVENT_CAM_REQ_MGR_ERROR： 一旦底层产生了错误，会向上抛出该事件。</li>
+</ul>
+<p style="text-indent:2em">一旦CSL获取了CRM模块信息成功之后，便开始枚举查找各个子模块了，其中会先去打开Sensor子设备，获取硬件信息，并且存入CSL中，然后再依次获取其它诸如IFE/IPE等硬件子模块并获取各自的信息，并存入CSL中，为之后的数据流转做好准备。</p>
+
+<p style="text-indent:2em">以上动作都完成之后，便开始查询Cam Sync模块了，基本流程与CRM大致相同：</p>
+
+<p style="text-indent:2em">调用open方法打开video1，该方法最终会调用内核部分的cam_sync_open方法，而该方法中会调用v4l2_fh_open方法，从而打开v4l2文件。</p>
+
+<p style="text-indent:2em">调用ioctl方法，订阅针对CAM_SYNC_V4L_EVENT_ID_CB_TRIG事件的监听 ，而对于该事件，一般是在子模块处理数据完成之后，会触发Cam Sync发送该事件至上层。</p>
+
+<ol start="2">
+<li><h4 id="打开Session"><a href="#打开Session" class="headerlink" title="打开Session"></a>打开Session</h4></li>
+</ol>
+<p style="text-indent:2em">好了，到这里，整个CamX初始化过程对于底层的请求都已经完成了，一旦用户打开相机应用之后，经过层层调用最终会去打开Session，进而调用video0的相应的ioctl方法传入CAM_REQ_MGR_CREATE_SESSION命令开始在驱动层打开Session的操作，而在驱动部分，会调用到CRM中的cam_req_mgr_create_session方法，在该方法中，会去创建一个用于代表session的handle，并将其存入全局静态变量hdl_tbl中。紧接着会去初始化该session中的link，其中该session管理着两个link数组，一个是用于初始化的links_init数组，一个是用于运行起来之后使用的links数组，这里的会首先初始化所有的links_init中的link，在使用的时候，会从该数组去取出一个空闲的link放入links中进行管理。</p>
+
+<ol start="3">
+<li><h4 id="打开设备"><a href="#打开设备" class="headerlink" title="打开设备"></a>打开设备</h4></li>
+</ol>
+<p style="text-indent:2em">在打开Session之后，随着Pipeline的创建，CamX会通过调用CSL中的相应Node的ioctl方法，下发CAM_ACQUIRE_DEV命令，来依次打开底层硬件设备，这里我们还是以ISP为例进行分析：</p>
+
+<ul>
+<li>一旦CSL调用了ISP设备节点的ioctl并且下发了CAM_ACQUIRE_DEV命令，并会通过层层调用一直调到__cam_node_handle_acquire_dev方法，在该方法中会首先去在ISP对应的node中的存储空闲context的队列中获取一个context。</li>
+<li>紧接着，调用了cam_context_handle_acquire_dev方法，来通过调用之前获取的context的对应的状态机方法集中的acquire_dev方法来打开isp设备，而在该方法中，会调用cam_create_device_hdl方法，将当前session handle以及isp操作方法集存入存入hdl_tbl中，之后crm会通过该方法集操作isp模块。之后会将当前isp context状态更新为CAM_CTX_ACQUIRED，并且初始化了用于管理request的active_req_list/wati_req_list/pending_req_list/pending_req_list/free_req_list链表，并且将初始化好req_list都挂载到free链表中。</li>
+</ul>
+<p style="text-indent:2em">除了ISP，会根据不同的图像采集需求，打开不同的子设备，基本流程差不多，都是通过下发CAM_ACQUIRE_DEV命令来完成的，这里我们便不进行赘述了。</p>
+
+<ol start="4">
+<li><h4 id="创建Link"><a href="#创建Link" class="headerlink" title="创建Link"></a>创建Link</h4></li>
+</ol>
+<p style="text-indent:2em">在打开所有的子设备之后，紧接着需要将它们链接起来形成一个拓扑结构，方便各个子模块的管理。而这个动作还是通过调用CRM对应的ioctl下发CAM_REQ_MGR_LINK命令来完成的，该动作会经过层层调用，一直调用到CRM中的cam_req_mgr_link方法，接下来我们具体介绍下该方法的主要动作：</p>
+
+<ul>
+<li>调用__cam_req_mgr_reserve_link方法，在该方法中，首先会去从当前Session中的links_init数组中取出一个空闲的link，将其存入links数组，并且初始化其中的用于管理所有的request的in_q队列。</li>
+<li>调用cam_create_device_hdl，创建link对应的handle，并且存入hdl_tbl中。</li>
+<li>调用__cam_req_mgr_create_subdevs方法，初始化用于存储处于当前Link中的所有子设备。</li>
+<li>调用__cam_req_mgr_setup_link_info方法，该方法首先会去调用该link中的所有子设备的get_dev_info方法来获取设备信息，然后会去依次调用hdl_tbl中的链接在此Link上的所有子设备的setup_link方法，来连接子设备，同时也将CRM的一些回调方法通过该方式注入到子设备中，使其具有通知CRM的能力。</li>
+<li>更新该Link状态为CAM_CRM_LINK_STATE_READY，并且创建了一个工作队列用于操作的异步处理。</li>
+</ul>
+<ol start="5">
+<li><h4 id="开启数据流"><a href="#开启数据流" class="headerlink" title="开启数据流"></a>开启数据流</h4></li>
+</ol>
+<p style="text-indent:2em">一旦整个Link创建完成之后，便可以开启数据流了，该动作通过CSL控制每一个子设备来完成，这里还是以ISP为例进行分析：</p>
+
+<p style="text-indent:2em">由于在CamX初始化过程中已经存有打开的ISP文件句柄，所有通过调用其iotcl方法下发CAM_START_DEV命令来通知底层ISP模块开始进行数据流程传输，该命令首先会走到node,然后通过node下发到context，然后调用当前context的状态机对应的start_dev方法，而在该方法中，会首先更新当前context状态为CAM_CTX_ACTIVATED，然后通过操作底层硬件管理模块开始数据流的处理。</p>
+
+<p style="text-indent:2em">除了ISP，还有Sensor/FLash等模块也是需要开启数据流，为之后的Request的下发做好准备。</p>
+
+<ol start="6">
+<li><h4 id="下发Request"><a href="#下发Request" class="headerlink" title="下发Request"></a>下发Request</h4></li>
+</ol>
+<p style="text-indent:2em">一旦开启了整个数据处理流程，便可以接收Request请求了，而该动作依然还是通过CRM来完成，调用其ioctl方法，传入CRM_WORKQ_TASK_SCHED_REQ命令，该动作最终会到达内核CRM中的cam_req_mgr_schedule_request方法，而方法会将此次任务封装成task交由工作队列进行异步处理，而在工作队列中最终会调用其回调方法cam_req_mgr_process_sched_req，该方法主要做了如下工作：</p>
+
+<ul>
+<li>取出该request从属的link，并且将其中的in_q取出，找到一个空闲的slot，并将该slot便作为此次request在内核中的实体。</li>
+<li>更新该slot的状态为CRM_SLOT_STATUS_REQ_ADDED，并且将link中的open_req_cnt计数加1。</li>
+</ul>
+<p style="text-indent:2em">从上面的梳理不难看出，下发Request的操作并不复杂，其中并没有一个实际的Request下发到子设备的动作，所以很自然地会产生一个疑问，没有下发Request的动作，那CRM是如何来驱动整个Request的流转的呢? 所以接下来我们来进一步介绍下，整个Request的流转机制。</p>
+
+<ol start="7">
+<li><h4 id="子设备处理数据"><a href="#子设备处理数据" class="headerlink" title="子设备处理数据"></a>子设备处理数据</h4></li>
+</ol>
+<p style="text-indent:2em">当CSL下发Request到KMD之后，便会进入到DRQ中进行流转，通过之前对于CamX的学习，想必大家应该已经熟悉了整个DRQ的运行机制，DRQ的每一个Node都会有一定依赖关系，一旦某个Node满足依赖关系之后，便会调用其ProcessRequest开始进行此次的Request处理，而该动作会将图像数据以及配置信息打包，通过调用ioctl方法下发CAM_CONFIG_DEV到具体的子设备节点来将配置写入KMD子设备中，而一旦子设备收到此次请求之后，会调用当前context的状态机所对应的config_dev方法，接下来我们具体介绍下其中的所作的动作：</p>
+
+<ul>
+<li>将此次配置信息包括图像数据放入硬件管理模块中，但是此时并不进行处理，等待处理指示。</li>
+<li>将此次Request信息封装一下，通过调用之前setup_link传入的回调方法集中的add_req方法通知CRM，而在CRM中，会首先通过一系列的判断，如果条件满足了便将此次request对应的slot状态更新为CRM_REQ_STATE_READY，并将该request存入pending队列中。</li>
+</ul>
+<p style="text-indent:2em">由上面的分析，发现该过程中并没有进行实际的硬件配置或者处理，此时便需要等待SOF的事件，来驱动接下来的操作，而SOF事件是ISP来通知CRM的，具体流程如下：</p>
+
+<ul>
+<li>EPOCH中断产生，触发回调方法__cam_isp_ctx_notify_sof_in_activated_state，在该方法中会封装事件，并且通过调用CRM中传入的回调方法notify_trigger将事件发送至CRM中。</li>
+<li>一旦CRM收取到SOF事件，便会去找到对应的满足要求的request，并且调用__cam_req_mgr_process_req方法通知相应的子设备进行配置。</li>
+<li>最后ISP会将此次SOF事件通过V4L2 event机制发送至UMD，通知到CSL中。</li>
+</ul>
+<ol start="8">
+<li><h4 id="数据操作完成"><a href="#数据操作完成" class="headerlink" title="数据操作完成"></a>数据操作完成</h4></li>
+</ol>
+<p style="text-indent:2em">当CamX中的各自Node完成了下发Request的操作之后，便会等待数据的处理完成，一旦完成便会触发buf_done中断，进而告知context，最终会调用cam_sync_signal方法来通知Cam Sync，而在Cam Sync中会通过子设备调用cam_sync_signal时传入的sync_id在sync_table_row找到相应的sync object，最终通过event机制，将此次处理完成的事件传入UMD CSL中，进而进行后续处理。</p>
+
+<p style="text-indent:2em">等到最后一个Node处理完成之后，此次Request的处理便宣告完成。</p>
+
+<p style="text-indent:2em">之前QCamera & MM-Camera架构采用的相机驱动比较简单，主要就承担了硬件的上下电以及读写寄存器的任务，并且控制方向都是从上到下，并且控制逻辑由UMD负责。但是随着时代的发展，相机硬件模块越发复杂，所以用于直接控制硬件的驱动层也需要承担更为复杂的控制任务，通过上面的分析，我们可以看到，高通重新设计了一套优秀的KMD框架，在其中加入了更多复杂的控制逻辑，以达到精细化控制底层硬件模块的目的，其中比较重要的是CRM对于子设备的横向控制，这样的好处很明显，降低了UMD控制驱动的难度，UMD只需要将请求通过V4L2框架中的设备节点下发至KMD中，之后便由KMD中的CRM来统一管理，适时地将请求下发给各个子设备，进而控制着底层硬件模块。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%85%AB-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93V4L2%E6%A1%86%E6%9E%B6%E8%A7%A3%E6%9E%90/" rel="prev" title="Android Camera 体系结构之八 相机驱动层–V4L2框架解析">
+                  <i class="fa fa-chevron-left"></i> Android Camera 体系结构之八 相机驱动层–V4L2框架解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%81-%E7%9B%B8%E6%9C%BA%E7%A1%AC%E4%BB%B6%E5%B1%82/" rel="next" title="Android Camera 体系结构之十 相机硬件层">
+                  Android Camera 体系结构之十 相机硬件层 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
