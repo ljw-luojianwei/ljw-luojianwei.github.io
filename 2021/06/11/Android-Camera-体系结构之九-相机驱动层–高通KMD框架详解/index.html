@@ -24,13 +24,13 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android Camera 体系结构之九 相机驱动层–高通KMD框架详解">
 <meta property="og:url" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/index.html">
-<meta property="og:site_name" content="罗建伟的个人博客">
+<meta property="og:site_name" content="罗建伟的个人主页">
 <meta property="og:description" content="概览利用了V4L2可扩展这一特性，高通在相机驱动部分实现了自有的一套KMD框架，该框架通过V4L2标准方法在系统中创建设备节点，将控制接口直接暴露给UMD CSL进行访问，而其内部主要定义了一系列核心模块，包括CRM(Camera Request Manager)，用于管理整个KMD的Session&#x2F;Link的创建销毁以及Request的在子设备间的流转，该模块创建video0设备节点暴露关键接口">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/sub.dev.jpg">
 <meta property="article:published_time" content="2021-06-11T07:03:20.000Z">
 <meta property="article:modified_time" content="2021-06-11T07:05:06.568Z">
-<meta property="article:author" content="罗建伟">
+<meta property="article:author" content="罗建伟的个人博客">
 <meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/sub.dev.jpg">
@@ -43,7 +43,7 @@
 <script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;leroy-github.github.io&#x2F;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B9%9D-%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%B1%82%E2%80%93%E9%AB%98%E9%80%9AKMD%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-体系结构之九-相机驱动层–高通KMD框架详解&#x2F;&quot;,&quot;title&quot;:&quot;Android Camera 体系结构之九 相机驱动层–高通KMD框架详解&quot;}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
-<title>Android Camera 体系结构之九 相机驱动层–高通KMD框架详解 | 罗建伟的个人博客</title>
+<title>Android Camera 体系结构之九 相机驱动层–高通KMD框架详解 | 罗建伟的个人主页</title>
   
 
 
@@ -72,7 +72,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">罗建伟的个人博客</h1>
+      <h1 class="site-title">罗建伟的个人主页</h1>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -128,7 +128,7 @@
 
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">罗建伟</p>
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
   <div class="site-description" itemprop="description">明确自己的内心所求，才能更好地解决问题</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
@@ -192,12 +192,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="罗建伟">
+      <meta itemprop="name" content="罗建伟的个人博客">
       <meta itemprop="description" content="明确自己的内心所求，才能更好地解决问题">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="name" content="罗建伟的个人主页">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -547,7 +547,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">罗建伟</span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
