@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="前言现在市面上的博客很多，如CSDN，博客园，简书等平台，可以直接在上面发表，用户交互做的好，写的文章百度也能搜索的到。缺点是比较不自由，会受到平台的各种限制和恶心的广告。而自己购买域名和服务器，搭建博客的成本实在是太高了，不光是说这些购买成本，单单是花力气去自己搭这么一个网站，还要定期的维护它，对于我们大多数人来说，实在是没有这样的精力和时间。那么就有第三种选择，通过Hexo直接在github">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过Hexo搭建个人博客">
+<meta property="og:url" content="https://luojianwei.top/2021/06/14/%E9%80%9A%E8%BF%87Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="前言现在市面上的博客很多，如CSDN，博客园，简书等平台，可以直接在上面发表，用户交互做的好，写的文章百度也能搜索的到。缺点是比较不自由，会受到平台的各种限制和恶心的广告。而自己购买域名和服务器，搭建博客的成本实在是太高了，不光是说这些购买成本，单单是花力气去自己搭这么一个网站，还要定期的维护它，对于我们大多数人来说，实在是没有这样的精力和时间。那么就有第三种选择，通过Hexo直接在github">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-14T09:24:45.000Z">
+<meta property="article:modified_time" content="2021-06-14T09:47:39.242Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Tools">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/06/14/%E9%80%9A%E8%BF%87Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;14&#x2F;%E9%80%9A%E8%BF%87Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;14&#x2F;通过Hexo搭建个人博客&#x2F;&quot;,&quot;title&quot;:&quot;通过Hexo搭建个人博客&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>通过Hexo搭建个人博客 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85git%E3%80%81Nodejs%E3%80%81hexo"><span class="nav-number">2.1.</span> <span class="nav-text">安装git、Nodejs、hexo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GitHub%E6%89%98%E7%AE%A1"><span class="nav-number">2.2.</span> <span class="nav-text">GitHub托管</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.</span> <span class="nav-text">工具配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#npm-%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.1.</span> <span class="nav-text">npm 配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">主题配置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E8%A3%85hexo%E4%B8%BB%E9%A2%98"><span class="nav-number">3.2.1.</span> <span class="nav-text">安装hexo主题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%BB%E9%A2%98"><span class="nav-number">3.2.2.</span> <span class="nav-text">配置主题</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%9A%E5%AE%A2%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.</span> <span class="nav-text">博客配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%A1%E7%90%86-%E9%80%9A%E8%BF%87git%E5%88%86%E6%94%AF%E8%BF%9B%E8%A1%8C%E5%A4%9A%E7%BB%88%E7%AB%AF%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">管理-通过git分支进行多终端工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%88%B6"><span class="nav-number">4.1.</span> <span class="nav-text">机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%A1%88"><span class="nav-number">4.2.</span> <span class="nav-text">方案</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/14/%E9%80%9A%E8%BF%87Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          通过Hexo搭建个人博客
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-06-14 17:24:45 / 修改时间：17:47:39" itemprop="dateCreated datePublished" datetime="2021-06-14T17:24:45+08:00">2021-06-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web/" itemprop="url" rel="index"><span itemprop="name">Web</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p style="text-indent:2em">现在市面上的博客很多，如CSDN，博客园，简书等平台，可以直接在上面发表，用户交互做的好，写的文章百度也能搜索的到。缺点是比较不自由，会受到平台的各种限制和恶心的广告。而自己购买域名和服务器，搭建博客的成本实在是太高了，不光是说这些购买成本，单单是花力气去自己搭这么一个网站，还要定期的维护它，对于我们大多数人来说，实在是没有这样的精力和时间。那么就有第三种选择，通过Hexo直接在github page等平台上托管我们的博客，这样就可以安心的来写作，又不需要定期维护。Hexo是一款基于Node.js的高效简洁的静态博客框架，依赖少易于安装使用，它使用MarkDown语法解析文章，可以方便的生成静态网页，托管在GitHub和Coding等托管平台上，是搭建博客的首选框架。</p>
+
+<h3 id="搭建"><a href="#搭建" class="headerlink" title="搭建"></a>搭建</h3><ol>
+<li><h4 id="安装git、Nodejs、hexo"><a href="#安装git、Nodejs、hexo" class="headerlink" title="安装git、Nodejs、hexo"></a>安装git、Nodejs、hexo</h4></li>
+</ol>
+<p style="text-indent:2em">Git是目前世界上最先进的分布式版本控制系统，可以高效的处理从很小到非常大的项目版本管理。也就是我们这里用来管理hexo博客文章上传到GitHub的工具。Hexo是基于NodeJS编写的，所以需要安装一下nodeJS和里面的npm工具。命令：sudo apt install git-core; sudo apt install nodejs;sudo apt install npm。git和nodejs安装好后，就可以用命令 npm install -g hexo-cli 全局安装hexo了。安装完后，检查一下有没有安装成功，至此就全部安装完了：
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># git</span></span><br><span class="line">git --version</span><br><span class="line"><span class="comment"># nodejs</span></span><br><span class="line">node -v</span><br><span class="line"><span class="comment"># npm</span></span><br><span class="line">npm -v</span><br><span class="line"><span class="comment"># hexo</span></span><br><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+</p><p style="text-indent:2em">接下来创建并初始化一下博客文件夹和安装Hexo需要的包，这个blog可以自己取什么名字都行。</p>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init blog &amp;&amp; cd blog &amp;&amp; npm install</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">新建完成后，指定文件夹目录下有：</p>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── node_modules           :依赖包文件夹。</span><br><span class="line">├── scaffolds              :模版文件夹。生成文章的一些模板，当您新建文章时，Hexo会根据scaffold来建立文件。</span><br><span class="line">├── source                 :资源文件夹。是存放用户资源的地方，你用来存放博客文章的md文件就放在此处。</span><br><span class="line">|   ├── _drafts            :</span><br><span class="line">|   └── _posts             :</span><br><span class="line">├── themes                 :主题文件夹。Hexo会根据主题来生成静态页面。</span><br><span class="line">├── _config.yml            :博客的配置文件</span><br><span class="line">├── db.json                :</span><br><span class="line">├── package.json           :</span><br><span class="line">└── package-lock.json      :</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">现在一个简单的个人博客已经创建完成，我们可以使用 hexo g(generate) 命令来生成静态网页。然后通过 hexo s(server) 命令启动本地服务器来预览一下hexo为我们提供的最原始博客页面。使用ctrl+c可以把服务关掉。</p>
+
+<ol start="2">
+<li><h4 id="GitHub托管"><a href="#GitHub托管" class="headerlink" title="GitHub托管"></a>GitHub托管</h4></li>
+</ol>
+<p style="text-indent:2em"><b>创建个人仓库：</b>创建一个和用户名相同的仓库，后面加.github.io，只有这样，将来要部署到GitHub page的时候，才会被识别，也就是xxxx.github.io，其中xxx就是注册GitHub的用户名。
+</p><p style="text-indent:2em"><b>安装 hexo-deployer-git 部署插件：</b>npm install hexo-deployer-git --save</p>
+
+<p style="text-indent:2em"><b>安装 hexo-asset-image 图片引用插件：</b>npm install hexo-asset-image --save</p>
+
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><h4 id="工具配置"><a href="#工具配置" class="headerlink" title="工具配置"></a>工具配置</h4><h5 id="npm-配置"><a href="#npm-配置" class="headerlink" title="npm 配置"></a>npm 配置</h5><ol>
+<li>设置npm在安装全局模块时的路径和环境变量(Windows)</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新建文件夹node_cache、node_global</span></span><br><span class="line">npm config <span class="built_in">set</span> prefix <span class="string">&quot;node_global&quot;</span></span><br><span class="line">npm config <span class="built_in">set</span> cache <span class="string">&quot;node_cache&quot;</span></span><br><span class="line"><span class="comment">#在系统变量中新建一个变量名为&quot;NODE_PATH&quot;，值为&quot;node_global\node_modules&quot;</span></span><br><span class="line"><span class="comment">#编辑用户变量里的Path，将相应npm的路径改为：&quot;nodejs\node_global&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>设置镜像源</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm config get registry</span><br><span class="line"><span class="comment"># https://registry.npmjs.org/</span></span><br><span class="line">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span><br><span class="line">npm config get registry</span><br><span class="line"><span class="comment"># https://registry.npm.taobao.org</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="主题配置"><a href="#主题配置" class="headerlink" title="主题配置"></a>主题配置</h4><h5 id="安装hexo主题"><a href="#安装hexo主题" class="headerlink" title="安装hexo主题"></a>安装hexo主题</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-theme-next</span><br><span class="line">cp -rf node_modules/hexo-theme-next themes &amp;&amp; mv themes/hexo-theme-next themes/next</span><br><span class="line">cp themes/next/_config.yml themes/next/_config.yml.bak</span><br></pre></td></tr></table></figure>
+
+<h5 id="配置主题"><a href="#配置主题" class="headerlink" title="配置主题"></a>配置主题</h5><h4 id="博客配置"><a href="#博客配置" class="headerlink" title="博客配置"></a>博客配置</h4><p style="text-indent:2em">在文件根目录下的<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/configuration" style="text-decoration:none">_config.yml</a>，就是整个hexo框架的配置文件了，可以在里面修改大部分的配置。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份原始核心配置文件</span></span><br><span class="line">cp _config.yml _config.yml.bak</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">theme 就是选择什么主题，也就是在theme这个文件夹下，在官网上有很多个主题，默认安装的是lanscape这个主题。当需要更换主题时，在官网上下载，把主题的文件放在theme文件夹下，再修改这个参数就可以了。</p><p style="text-indent:2em">deploy 就是网站的部署的，repo就是仓库(Repository)的简写。branch选择仓库的哪个分支。
+</p>
+
+
+
+<p>Front-matter 是文件最上方以 — 分隔的区域，用于指定个别文件的变量</p>
+<h3 id="管理-通过git分支进行多终端工作"><a href="#管理-通过git分支进行多终端工作" class="headerlink" title="管理-通过git分支进行多终端工作"></a>管理-通过git分支进行多终端工作</h3><h4 id="机制"><a href="#机制" class="headerlink" title="机制"></a>机制</h4><p style="text-indent:2em">由于`hexo d`上传部署到 github 的其实是 hexo 编译后的文件，是用来生成网页的，不包含源文件。也就是上传的是在本地目录里自动生成的`.deploy_git`里面。其他文件 ，包括我们写在 source 里面的，配置文件，主题文件，都没有上传到 github。所以可以利用 git 的分支管理，将源文件上传到 github 的另一个分支即可。</p>
+
+<h4 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h4><p style="text-indent:2em">主要是通过维护两条 git 分支来实现，第一个分支是 Gihub 上默认的 master 分支，用于存放发布的博文的静态页面；另外再新建一个分支，比如命名为 hexo ，通过此分支存放主题、原始的博客文件等等，这些文件才是不同电脑需要同步的文件；当每次修改主题或者新增博文后，先将修改的主题文件(在themes文件夹下)或者新增博客(在source文件夹下)，同步到远程的 Hexo 分支，然后在通过 hexo g -d 命令发布博文，也就是将新增的博文的静态页面同步到 master 分支。这样通过不同的分支管理不同的文件，实现了多台电脑同步更新博文的功能。</p>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Tools/" rel="tag"># Tools</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%BA%8C-%E6%89%8B%E6%9C%BA%E7%9B%B8%E6%9C%BA%E7%9A%84%E6%9C%AA%E6%9D%A5%E4%B8%8E%E5%8F%91%E5%B1%95/" rel="prev" title="Android Camera 体系结构十二 手机相机的未来与发展">
+                  <i class="fa fa-chevron-left"></i> Android Camera 体系结构十二 手机相机的未来与发展
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
