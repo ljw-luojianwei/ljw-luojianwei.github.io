@@ -7,42 +7,42 @@
 <meta name="generator" content="Hexo 5.4.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="blog/images/logo.svg" color="#222">
 
-<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="blog/css/main.css">
 
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;leroy-github.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;blog&#x2F;&quot;,&quot;images&quot;:&quot;blog&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="blog/js/config.js"></script>
 <meta name="description" content="概览相机应用处于整个框架的上层，在现实生活中，为了满足各式各样的应用场景，会加入很多业务处理逻辑，但是一旦当我们拨开繁杂的业务逻辑，便会发现其核心部分依然是通过调用谷歌制订的一系列Camera Api接口来完成的，而所有的相机行为都包含在该接口中。  起初，相机系统采用的是Camera Api v1接口，它通过一个Camera 类以及该类中的几个标准方法来实现整个相机系统的预览、拍照以及录像功能，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android Camera 体系结构之四 相机应用层">
-<meta property="og:url" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/index.html">
+<meta property="og:url" content="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/index.html">
 <meta property="og:site_name" content="罗建伟的个人主页">
 <meta property="og:description" content="概览相机应用处于整个框架的上层，在现实生活中，为了满足各式各样的应用场景，会加入很多业务处理逻辑，但是一旦当我们拨开繁杂的业务逻辑，便会发现其核心部分依然是通过调用谷歌制订的一系列Camera Api接口来完成的，而所有的相机行为都包含在该接口中。  起初，相机系统采用的是Camera Api v1接口，它通过一个Camera 类以及该类中的几个标准方法来实现整个相机系统的预览、拍照以及录像功能，">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/camera.jpg">
-<meta property="og:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framework01.jpg">
-<meta property="og:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framwork02.jpg">
+<meta property="og:image" content="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/camera.jpg">
+<meta property="og:image" content="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framework01.jpg">
+<meta property="og:image" content="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framwork02.jpg">
 <meta property="article:published_time" content="2021-06-11T06:51:55.000Z">
 <meta property="article:modified_time" content="2021-06-11T06:53:16.861Z">
 <meta property="article:author" content="罗建伟的个人博客">
 <meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/camera.jpg">
+<meta name="twitter:image" content="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/camera.jpg">
 
 
-<link rel="canonical" href="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/">
+<link rel="canonical" href="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;leroy-github.github.io&#x2F;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-体系结构之四-相机应用层&#x2F;&quot;,&quot;title&quot;:&quot;Android Camera 体系结构之四 相机应用层&quot;}</script>
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;blog&#x2F;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-体系结构之四-相机应用层&#x2F;&quot;,&quot;title&quot;:&quot;Android Camera 体系结构之四 相机应用层&quot;}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
 <title>Android Camera 体系结构之四 相机应用层 | 罗建伟的个人主页</title>
@@ -52,7 +52,7 @@
 
 
   <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
+    <link rel="stylesheet" href="blog/css/noscript.css">
   </noscript>
 </head>
 
@@ -72,7 +72,7 @@
 
   <div class="site-meta">
 
-    <a href="/" class="brand" rel="start">
+    <a href="blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">罗建伟的个人主页</h1>
       <i class="logo-line"></i>
@@ -89,11 +89,11 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
   </ul>
 </nav>
 
@@ -136,20 +136,20 @@
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/archives/">
+          <a href="blog/archives/">
         
           <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/categories/">
+            <a href="blog/categories/">
           
         <span class="site-state-item-count">1</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/tags/">
+            <a href="blog/tags/">
           
         <span class="site-state-item-count">1</span>
         <span class="site-state-item-name">标签</span></a>
@@ -190,10 +190,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://leroy-github.github.io/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="blog/images/avatar.gif">
       <meta itemprop="name" content="罗建伟的个人博客">
       <meta itemprop="description" content="明确自己的内心所求，才能更好地解决问题">
     </span>
@@ -223,7 +223,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Camera/" itemprop="url" rel="index"><span itemprop="name">Camera</span></a>
+          <a href="blog/categories/Camera/" itemprop="url" rel="index"><span itemprop="name">Camera</span></a>
         </span>
     </span>
 
@@ -243,7 +243,7 @@
 
 <p style="text-indent:2em">谷歌提出Camera Api v2接口的同时，将其具体实现放入了Camera Framework中来完成，Framework内部负责解析来自App的请求，并且通过AIDL跨进程接口下发到Camera Service中进行处理，并且等待结果的回传。接下来我们首先以Camera Api v2接口为主简单讲解下其逻辑含义，然后详细梳理下Camera Framework对于它的实现，最后以一个简单App Demo为例，来介绍下如何使用该接口来控制整个相机体系。</p>
 
-<p><img src="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/camera.jpg" alt="img"></p>
+<p><img src="blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/camera.jpg" alt="img"></p>
 <h4 id="Camera-Api-v2"><a href="#Camera-Api-v2" class="headerlink" title="Camera Api v2"></a>Camera Api v2</h4><p style="text-indent:2em">在介绍Camera Api v2之前，首先我们来回顾下Api v1接口的基本逻辑，该接口主要通过一个Camera.java类来定义了所有的控制行为，通过定义诸如open、startPreview、takePicture、AutoFocus等标准的接口来实现打开设备、预览、拍照以及对焦操作的功能，同时通过定义Camera.Parameters来实现了参数的读取与设置，其中包括了帧率、图片格式的控制，另外，通过定义了Camera.CameraInfo来实现了图像元数据的获取。而为了更加细致化地控制相机系统的Camera Api v2接口，相对于Api v1接口而言，复杂了许多，通过不同的接口类以及接口方法定义了复杂的相机系统行为，接下来我们来逐一进行介绍：</p>
 
 <h5 id="CameraManager"><a href="#CameraManager" class="headerlink" title="CameraManager"></a>CameraManager</h5><p style="text-indent:2em">谷歌将CameraManager定义为一个系统服务，通过Context.getSystemService来获取，主要用于检测以及打开系统相机，其中打开操作通过openCamera方法来完成。除此之外，还定义了getCameraCharacteristics方法来获取当前Camera设备支持的属性信息，而该属性信息通过CameraCharacteristics来表示，其中包括了图像数据的大小以及帧率等信息。</p>
@@ -266,7 +266,7 @@
 
 <h3 id="Camera-Framework"><a href="#Camera-Framework" class="headerlink" title="Camera Framework"></a>Camera Framework</h3><p style="text-indent:2em">基于接口与实现相分离的基本设计原则，谷歌通过Camera Api 接口的定义，搭建起了App与相机系统的桥梁，而具体实现便是由Camera Framework来负责完成的。在采用Camera Api v1接口的时期，该部分是通过JNI层来进行java到C++的转换，进而到达native层，而在native层会通过实现CameraClient建立与Camera Service的通讯 ，整个过程比较繁琐，使得整体框架略显繁杂，而随着Camera Api v2的提出，在该层便大量使用AIDL机制，直接在Java层建立与Camera Service的通信，进一步简化了整体框架。接下来我们以几个主要接口为主线，简单梳理下其具体实现。</p>
 
-<p><img src="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framework01.jpg" alt="img"></p>
+<p><img src="blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framework01.jpg" alt="img"></p>
 <h5 id="CameraManager-1"><a href="#CameraManager-1" class="headerlink" title="CameraManager"></a>CameraManager</h5><p style="text-indent:2em">实现主要在CameraManager.java中，通过CameraManager查询、获取以及打开一个Camera 设备。在该类中还实现了内部类CameraManagerGlobal，该类继承于ICameraServiceListener.Stub，在内部会获取到ICameraService远程代理，并且调用ICameraService的addListener方法将自己注册到Camera Service中，一旦Camera Service状态有所变更便会通过其实现的回调方法通知到Camera Manager服务，另外，该类在打开相机设备的时候，还通过调用ICameraService.connectDevice()方法获取到Camera Service中的CameraDevice远程代理ICameraDeviceUser对象，并且将该代理传入CameraDeviceImpl中，进而与Camera Service建立了连接。</p>
 
 <h5 id="CameraDeviceImpl"><a href="#CameraDeviceImpl" class="headerlink" title="CameraDeviceImpl"></a>CameraDeviceImpl</h5><p style="text-indent:2em">该类定义在CameraDeviceImpl.java文件中，继承并实现了CameraDevice接口，代表了一个相机设备，可以完成CameraCaptureSession的创建以及CaptureRequest创建等工作，内部定义了CameraDeviceCallbacks类(该类继承于ICameraDeviceCallbacks.Stub，对应于ICameraDeviceCallbacks接口)，用于接收来自Camera Service中的Camera Device的状态回调，并且内部维护着一个Camera Service 的远程ICameraDevice代理，进而可以下发图像请求到Camera Service中。</p>
@@ -283,7 +283,7 @@
 
 <h5 id="CameraCaptureSession-CaptureCallback-1"><a href="#CameraCaptureSession-CaptureCallback-1" class="headerlink" title="CameraCaptureSession.CaptureCallback"></a>CameraCaptureSession.CaptureCallback</h5><p style="text-indent:2em">被App端进行继承并实现，App通过调用CameraCaptureSessionImpl的setRepeatingRequest或者capture方法时作为参数传入Framework，一旦Framework接收到来自CameraService的数据时，便会通过调用这个回调类将数据发送至App中。</p>
 
-<p><img src="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framwork02.jpg" alt="img"></p>
+<p><img src="blog/blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/app-framwork02.jpg" alt="img"></p>
 <p>Camera Framework 中针对几个接口的调用流程如上图，接下来我们依次进行分析：</p>
 <h6 id="a-openCamera"><a href="#a-openCamera" class="headerlink" title="a) openCamera"></a>a) openCamera</h6><p style="text-indent:2em">当用户打开相机应用时，会去调用该方法打开一个相机设备，其中该方法最终经过层层调用会调用到Camera Framework中的openCameraDeviceUserAsync方法，在该方法中主要做了三件事：</p>
 
@@ -327,19 +327,19 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="blog/tags/Android/" rel="tag"># Android</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B8%89-%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88/" rel="prev" title="Android Camera 体系结构之三 架构概览">
+                <a href="blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B8%89-%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88/" rel="prev" title="Android Camera 体系结构之三 架构概览">
                   <i class="fa fa-chevron-left"></i> Android Camera 体系结构之三 架构概览
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%BA%94-%E7%9B%B8%E6%9C%BA%E6%9C%8D%E5%8A%A1%E5%B1%82/" rel="next" title="Android Camera 体系结构之五 相机服务层">
+                <a href="blog/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%BA%94-%E7%9B%B8%E6%9C%BA%E6%9C%8D%E5%8A%A1%E5%B1%82/" rel="next" title="Android Camera 体系结构之五 相机服务层">
                   Android Camera 体系结构之五 相机服务层 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -376,7 +376,7 @@
 
   
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+<script src="blog/js/comments.js"></script><script src="blog/js/utils.js"></script><script src="blog/js/motion.js"></script><script src="blog/js/next-boot.js"></script>
 
   
 
