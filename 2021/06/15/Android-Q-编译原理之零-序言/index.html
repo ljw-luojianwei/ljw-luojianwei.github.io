@@ -20,23 +20,28 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
-<meta property="og:type" content="website">
-<meta property="og:title" content="罗建伟的个人主页">
-<meta property="og:url" content="https://luojianwei.top/archives/2021/page/2/index.html">
+<meta name="description" content="Android的版本一直快速的进行迭代着，从我们以前最常见的Android 4.4一直发展到了今天的Android 12.0版本(即Android K到Android S)，Android版本的快速迭代对于消费者来说是一件好事，但是对于开发者来说各种适配各种改造有时候吃翔的心情都有了。而对于Android版本的适配和各种改造的第一步就是从编译Android源码开始，可是不幸的是随着Android版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Q 编译原理之零 序言">
+<meta property="og:url" content="https://luojianwei.top/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80/index.html">
 <meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="Android的版本一直快速的进行迭代着，从我们以前最常见的Android 4.4一直发展到了今天的Android 12.0版本(即Android K到Android S)，Android版本的快速迭代对于消费者来说是一件好事，但是对于开发者来说各种适配各种改造有时候吃翔的心情都有了。而对于Android版本的适配和各种改造的第一步就是从编译Android源码开始，可是不幸的是随着Android版">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-15T09:20:06.000Z">
+<meta property="article:modified_time" content="2021-06-15T09:38:30.290Z">
 <meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://luojianwei.top/archives/2021/page/2/">
+<link rel="canonical" href="https://luojianwei.top/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:false,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:&quot;&quot;,&quot;permalink&quot;:&quot;&quot;,&quot;path&quot;:&quot;archives&#x2F;2021&#x2F;page&#x2F;2&#x2F;index.html&quot;,&quot;title&quot;:&quot;&quot;}</script>
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;15&#x2F;Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;15&#x2F;Android-Q-编译原理之零-序言&#x2F;&quot;,&quot;title&quot;:&quot;Android Q 编译原理之零 序言&quot;}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
-<title>归档 | 罗建伟的个人主页</title>
+<title>Android Q 编译原理之零 序言 | 罗建伟的个人主页</title>
   
 
 
@@ -103,7 +108,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -116,6 +121,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -170,132 +176,128 @@
 </noscript>
 
 
-    <div class="main-inner archive posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 15 篇日志。 继续努力。</span>
-      </div>
 
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android Q 编译原理之零 序言
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+
+      <time title="创建时间：2021-06-15 17:20:06 / 修改时间：17:38:30" itemprop="dateCreated datePublished" datetime="2021-06-15T17:20:06+08:00">2021-06-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Compiler/" itemprop="url" rel="index"><span itemprop="name">Compiler</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p style="text-indent:2em">Android的版本一直快速的进行迭代着，从我们以前最常见的Android 4.4一直发展到了今天的Android 12.0版本(即Android K到Android S)，Android版本的快速迭代对于消费者来说是一件好事，但是对于开发者来说各种适配各种改造有时候吃翔的心情都有了。而对于Android版本的适配和各种改造的第一步就是从编译Android源码开始，可是不幸的是随着Android版本的迭代连编译Android源码的相关流程都发生了翻天覆地的变化。本系列基于Android 10.0 进行编译系统的体系的一个梳理。</p>
+
+<p>Android各个版本的对应关系如下:</p>
+<table>
+<thead>
+<tr>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h4>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-06-11T14:54:02+08:00"
-              content="2021-06-11">
-          06-11
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%BA%94-%E7%9B%B8%E6%9C%BA%E6%9C%8D%E5%8A%A1%E5%B1%82/" itemprop="url">
-            <span itemprop="name">Android Camera 体系结构之五 相机服务层</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%80-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E7%AF%87/" rel="prev" title="Android Q 编译原理之一 编译系统入门篇">
+                  <i class="fa fa-chevron-left"></i> Android Q 编译原理之一 编译系统入门篇
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-06-11T14:51:55+08:00"
-              content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E5%9B%9B-%E7%9B%B8%E6%9C%BA%E5%BA%94%E7%94%A8%E5%B1%82/" itemprop="url">
-            <span itemprop="name">Android Camera 体系结构之四 相机应用层</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-06-11T14:46:34+08:00"
-              content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B8%89-%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88/" itemprop="url">
-            <span itemprop="name">Android Camera 体系结构之三 架构概览</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-06-11T14:43:49+08:00"
-              content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%BA%8C-%E7%9B%B8%E6%9C%BA%E7%AE%80%E5%8F%B2/" itemprop="url">
-            <span itemprop="name">Android Camera 体系结构之二 相机简史</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-06-11T14:42:37+08:00"
-              content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B9%8B%E4%B8%80-%E5%BA%8F%E8%A8%80/" itemprop="url">
-            <span itemprop="name">Android Camera 体系结构之一 序言</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
+</div>
 
 
-    </div>
-  </div>
-  
-  
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2021/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/2021/">1</a><span class="page-number current">2</span>
-  </nav>
+
+
+
 
 </div>
   </main>
