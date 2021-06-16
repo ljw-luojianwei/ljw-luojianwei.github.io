@@ -1,0 +1,77 @@
+{
+  "_from": "hexo-theme-next",
+  "_id": "hexo-theme-next@8.5.0",
+  "_inBundle": false,
+  "_integrity": "sha1-dLs0w9JIHTa8Wxh3v8YQT0rDSEw=",
+  "_location": "/hexo-theme-next",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "hexo-theme-next",
+    "name": "hexo-theme-next",
+    "escapedName": "hexo-theme-next",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.nlark.com/hexo-theme-next/download/hexo-theme-next-8.5.0.tgz",
+  "_shasum": "74bb34c3d2481d36bc5b1877bfc6104f4ac3484c",
+  "_spec": "hexo-theme-next",
+  "_where": "C:\\Users\\jianwei.luo\\AppData\\Local\\Programs\\cygwin64\\home\\jianwei.luo\\blog\\github",
+  "author": {
+    "name": "NexT",
+    "url": "https://theme-next.js.org"
+  },
+  "bugs": {
+    "url": "https://github.com/next-theme/hexo-theme-next/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Elegant and powerful theme for Hexo.",
+  "devDependencies": {
+    "@next-theme/eslint-config": "0.0.2",
+    "chai": "4.3.4",
+    "eslint": "7.27.0",
+    "hexo": "5.4.0",
+    "hexo-renderer-marked": "4.0.0",
+    "js-yaml": "4.1.0",
+    "mocha": "8.4.0",
+    "nyc": "15.1.0",
+    "stylint": "2.0.0"
+  },
+  "files": [
+    "docs",
+    "languages",
+    "layout",
+    "scripts",
+    "source",
+    "_config.yml",
+    "_vendors.yml"
+  ],
+  "homepage": "https://theme-next.js.org",
+  "keywords": [
+    "hexo",
+    "theme",
+    "next"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "main": "package.json",
+  "name": "hexo-theme-next",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/next-theme/hexo-theme-next.git"
+  },
+  "scripts": {
+    "eslint": "eslint scripts/ source/js test/",
+    "prepare": "node .githooks/install.js",
+    "stylint": "stylint source/css/",
+    "test": "mocha test/index.js",
+    "test-cov": "nyc npm test"
+  },
+  "version": "8.5.0"
+}
