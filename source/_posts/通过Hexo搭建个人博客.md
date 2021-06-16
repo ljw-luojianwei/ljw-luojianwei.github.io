@@ -197,31 +197,16 @@ hexo publish draft newpage
 
 ##### 实现
 
-<p style="text-indent:2em">首先在github上新建一个hexo分支。然后在这个仓库的settings中，选择默认分支为hexo分支(这样每次同步的时候就不用指定分支，比较方便)。接着将其克隆到本地，因为默认分支已经设成了hexo，所以clone时只clone了hexo。最后在克隆到本地的仓库中，把除了.git 文件夹外的所有文件都删掉，把之前我们写的博客源文件全部复制过来，除了.deploy_git。这里应该说一句，复制过来的源文件应该有一个.gitignore，用来忽略一些不需要的文件，如果没有的话，自己新建一个，在里面写上如下，表示这些类型文件不需要git：</p>
+- <p><b>创建分支 </b>在github上此仓库中新建一个hexo分支，并这个仓库的settings中，选择默认分支为hexo分支(这样每次同步的时候就不用指定分支，比较方便)。</p>
 
-```bash
-.DS_Store
-Thumbs.db
-db.json
-*.log
-node_modules/
-public/
-.deploy*/
-```
+- <p><b>初始化分支 </b>在已经部署好Hexo环境的PC上将其克隆到本地，因为默认分支已经设成了hexo，所以clone时只clone了hexo。在克隆到本地的仓库中，把除了.git 文件夹外的所有文件都删掉。接着将本次修改推送到远端hexo；将刚才未删除的.git文件夹拷贝至<blog-folder>根目录，此时本地的<blog-folder>目录已与github上面的hexo分支关联了，而且默认的.gitignore已经配置了忽略规则，所以已经可以将根目录下的文件同步上去。这样上传完了之后可以去github仓库上看一看hexo分支有没有上传上去，其中node_modules、public、db.json已经被忽略掉了，没有关系，不需要上传的，因为在其他部署好Hexo环境的PC上需要重新输入命令安装。在其他部署好Hexo环境的PC上将仓库克隆到本地，进入仓库中执行：</p>
 
-<p style="text-indent:2em">注意，如果之前克隆过theme中的主题文件，那么应该把主题文件中的.git文件夹删掉，因为git不能嵌套上传，最好是显示隐藏文件，检查一下有没有，否则上传的时候会出错，导致你的主题文件无法上传，这样你的配置在别的电脑上就用不了了。而后，</p>
+  ```bash
+  npm install
+  npm install hexo-deployer-git --save
+  ```
+  
+不需要*hexo init*，就可以进行hexo博客操作了。
+  
 
-```
-git add .
-git commit –m "add branch"
-git push 
-```
-
-<p style="text-indent:2em">这样就上传完了，可以去你的github上看一看hexo分支有没有上传上去，其中node_modules、public、db.json已经被忽略掉了，没有关系，不需要上传的，因为在另外的电脑上需要重新输入命令安装。在另外的电脑上将仓库克隆到本地，进入仓库中执行：</p>
-
-```bash
-npm install
-npm install hexo-deployer-git --save
-npm install hexo-asset-image --save
-```
 
