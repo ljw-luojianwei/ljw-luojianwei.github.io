@@ -89,7 +89,7 @@ npm config get registry
 
 #####  hexo-asset-image 图片引用插件
 
-​      修改博客目录下`node_modules\hexo-asset-image\index.js`(原文件有bug)
+<p style="text-indent:2em">将hexo本地根目录下的核心配置文件_config.yml的post_asset_folder: true。修改博客目录下`node_modules\hexo-asset-image\index.js`(原文件有bug)</p>
 
 ![在这里插入图片描述](通过Hexo搭建个人博客/20200703112937960.png)
 
@@ -106,8 +106,6 @@ cp themes/next/_config.yml themes/next/_config.yml.bak
 ##### 配置next主题
 
 <p style="text-indent:2em">打开目录blog/themes/next/下的_config.yml(称为<b>主题配置文件</b>)，只要将你选的主题前的#删除就行了。
-
-
 
 #### 博客配置
 
@@ -205,8 +203,8 @@ hexo publish draft newpage
   npm install
   npm install hexo-deployer-git --save
   ```
-  
+
 不需要*hexo init*，就可以进行hexo博客操作了。
-  
+
 
 

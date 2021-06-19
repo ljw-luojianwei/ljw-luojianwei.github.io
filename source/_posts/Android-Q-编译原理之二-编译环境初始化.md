@@ -14,3 +14,23 @@ comments: true
 
 ### 初始化命令介绍
 
+```bash
+# 初始化命令：
+source build/envsetup.sh
+```
+
+<p style="text-indent:2em">envsetup.sh 主要做了下面几个事情：</p>
+
+![envsetup](Android-Q-编译原理之二-编译环境初始化/envsetup.jpg)
+
+<p style="text-indent:2em">envsetup.sh 构建代码：</p>
+
+```bash
+  ...
+  validate_current_shell
+  source_vendorsetup
+  addcompletions
+```
+
+输入hmm可以看到envsetup支持的一些接口
+
