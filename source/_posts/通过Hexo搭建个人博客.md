@@ -16,7 +16,8 @@ comments: true
 
 1. #### 安装git、nodejs、hexo
 
-<p style="text-indent:2em">Git是目前世界上最先进的分布式版本控制系统，可以高效的处理从很小到非常大的项目版本管理。也就是我们这里用来管理hexo博客文章上传到GitHub的工具。Hexo是基于NodeJS编写的，所以需要安装一下NodeJS和里面的npm工具。命令：sudo apt install git-core; sudo apt install nodejs;sudo apt install npm。git和nodejs安装好后，就可以用命令 npm install -g hexo-cli 全局安装hexo了。安装完后，检查一下有没有安装成功，至此就全部安装完了：
+<p style="text-indent:2em">Git是目前世界上最先进的分布式版本控制系统，可以高效的处理从很小到非常大的项目版本管理，也就是我们这里用来管理hexo博客文章上传到GitHub的工具。Hexo是基于Node.js编写的，Node.js是一个基于Chrome V8引擎的JavaScript运行时。所以需要安装一下Node.js和里面的npm工具。命令：sudo apt install git-core; sudo apt install nodejs;sudo apt install npm。git和nodejs安装好后，就可以用命令 npm install -g hexo-cli 全局安装hexo了。安装完后，检查一下有没有安装成功，至此就全部安装完了：
+
 
 ```bash
 # git

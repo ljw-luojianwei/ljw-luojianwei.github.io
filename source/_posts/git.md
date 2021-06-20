@@ -8,11 +8,11 @@ tags:
 comments: true
 ---
 
-![img](Android-源码管理之三-git/1460000023734707)
+![img](git/1460000023734707)
 
 ### Git  流程图
 
-![img](Android-源码管理之三-git/1460000023734708)
+![img](git/1460000023734708)
 
 - <font color="#dd0000">`Workspace`</font>：工作区
 - <font color="#dd0000">`Index/Stage`</font>：暂存区
