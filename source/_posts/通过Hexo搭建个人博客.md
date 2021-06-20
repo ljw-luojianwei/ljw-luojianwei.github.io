@@ -17,8 +17,6 @@ comments: true
 1. #### 安装git、nodejs、hexo
 
 <p style="text-indent:2em">Git是目前世界上最先进的分布式版本控制系统，可以高效的处理从很小到非常大的项目版本管理，也就是我们这里用来管理hexo博客文章上传到GitHub的工具。Hexo是基于Node.js编写的，Node.js是一个基于Chrome V8引擎的JavaScript运行时。所以需要安装一下Node.js和里面的npm工具。命令：sudo apt install git-core; sudo apt install nodejs;sudo apt install npm。git和nodejs安装好后，就可以用命令 npm install -g hexo-cli 全局安装hexo了。安装完后，检查一下有没有安装成功，至此就全部安装完了：
-
-
 ```bash
 # git
 git --version
@@ -58,7 +56,7 @@ hexo init <blog-folder> && cd <blog-folder> && npm install
 
 <p style="text-indent:2em"><b>创建个人仓库：</b>创建一个和用户名相同的仓库，后面加.github.io，只有这样，将来要部署到GitHub page的时候，才会被识别，也就是xxxx.github.io，其中xxx就是注册GitHub的用户名。
 <p style="text-indent:2em"><b>安装 hexo-deployer-git 部署插件：</b>npm install hexo-deployer-git --save</p>
-<p style="text-indent:2em"><b>安装 hexo-asset-image 图片引用插件：</b>npm install hexo-asset-image --save</p>
+
 
 ### 配置
 
@@ -88,11 +86,26 @@ npm config get registry
 
 #### 插件配置
 
-#####  hexo-asset-image 图片引用插件
+##### hexo-renderer-marked 图片绝对引用插件
 
-<p style="text-indent:2em">将hexo本地根目录下的核心配置文件_config.yml的post_asset_folder: true。修改博客目录下`node_modules\hexo-asset-image\index.js`(原文件有bug)</p>
+<p style="text-indent:2em"><b>安装 hexo-renderer-marked  ：</b>npm install hexo-renderer-marked
 
-![在这里插入图片描述](通过Hexo搭建个人博客/20200703112937960.png)
+<p style="text-indent:2em">在核心配置文件 config.yaml 中更改配置如下：</p>
+
+```
+post_asset_folder: true
+marked:
+  prependRoot: true
+  postAsset: true
+```
+
+#####  hexo-asset-image 图片相对引用插件
+
+<p style="text-indent:2em"><b>安装 hexo-asset-image ：</b>npm install hexo-asset-image --save</p>
+
+<p style="text-indent:2em">将hexo本地根目录下的核心配置文件_config.yml的post_asset_folder: true，若配置了hexo-renderer-marked插件则已经修改。修改博客目录 node_modules\hexo-asset-image\index.js(原文件有bug)</p>
+
+![](通过Hexo搭建个人博客/20200703112937960.png)
 
 #### [主题配置](https://hexo.io/themes/)
 
