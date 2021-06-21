@@ -21,4 +21,6 @@ Android各个版本的对应关系如下:
 - [00.序言](https://ljw-luojianwei.github.io/2021/06/15/Android-Q-编译原理之零-序言)
 - [01.编译系统入门篇](https://ljw-luojianwei.github.io/2021/06/15/Android-Q-编译原理之一-编译系统入门篇)
 - [02.编译环境初始化](https://ljw-luojianwei.github.io/2021/06/16/Android-Q-编译原理之二-编译环境初始化)
+- [03.make编译过程](https://ljw-luojianwei.github.io/2021/06/17/Android-Q-编译系统之三-make编译过程/)
+- [04.Image打包流程](https://luojianwei.top/2021/06/17/Android-Q-编译系统之四-Image打包流程/)
 
