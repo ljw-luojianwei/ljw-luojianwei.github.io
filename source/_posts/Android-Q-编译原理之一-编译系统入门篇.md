@@ -24,10 +24,6 @@ Android 8.0 引入Android.bp和soong构建系统，默认打开Android.bp
 Android 9.0 强制使用Android.bp
 ```
 
-<p style="text-indent:2em">Google在Android 7.0之后，引入了Soong构建系统，旨在取代Make，它利用Kati GNU Make克隆工具和Ninja构建系统组件来加速Android的构建。Make构建系统得到了广泛的支持和使用，但在Android层面变得缓慢、容易出错、无法扩展且难以测试。Soong构建系统正好提供了Android Build所需的灵活性。
-
-![Android系统的编译历程](Android-Q-编译原理之一-编译系统入门篇/Android系统的编译历程.jpg)
-
 ### 编译系统中Makefile、Android.mk、Ninja、Kati、Soong、Blueprint、Android.bp概念介绍
 
 <p style="text-indent:2em"><b>Makefile </b>Android平台的编译系统其实就是用Makefile写出来的一个独立项目。它定义了编译的规则，实现了“自动化编译”，不仅把分散在数百个Git库中的代码整合起来、统一编译， 而且还把产物分门别类地输出到一个目录，打包成手机ROM，还可以生成应用开发时所使用的SDK、NDK等。因此，采用Makefile编写的编译系统，也可以称为Makefile编译系统。Makefile默认文件名为Makefile或makefile，也常用.make或.mk作为文件后缀。</p>
@@ -59,12 +55,6 @@ include out/build-aosp_arm.ninja
 include out/soong/build.ninja
 build out/combined-aosp_arm.ninja: phony out/soong/build.ninja
 ```
-
-### Soong构建系统
-
-#### Soong构建系统家族成员及各自关系如下图所示：
-
-![Soong编译系统家族成员](Android-Q-编译原理之一-编译系统入门篇/Soong编译系统家族成员.jpg)
 
 <p style="text-indent:2em">Android的编译目录在/build 中，看一下Android 10.0源码中的build目录，现在是这个样子：</p>
 
