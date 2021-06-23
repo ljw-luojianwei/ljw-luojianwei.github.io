@@ -219,8 +219,6 @@ Which would you like? [aosp_arm-eng]
 
 <p style="text-indent:2em">意思就是要你选择编译目标的格式，编译目标的格式组成为BUILD-BUILDTYPE，比如 aosp_arm-eng 的BUILD为aosp_arm，BUILDTYPE为eng。其中BUILD表示编译出的镜像可以运行在什么环境，aosp代表Android开源项目，arm表示系统是运行在arm架构的处理器上。
     更多参考<a href=https://source.android.google.cn/source/running.html#selecting-device-build>官方文档</a>。BUILDTYPE 指的是编译类型，有以下三种：</p>
-
-
 ```
 - user：用来正式发布到市场的版本，权限受限，如没有 root 权限，不能 dedug，adb默认处于停用状态。
 - userdebug：在user版本的基础上开放了 root 权限和 debug 权限，adb默认处于启用状态。一般用于调试真机。
@@ -253,8 +251,6 @@ make -j12  2>&1 | tee build.log
 4. ##### 运行模拟器
 
 <p style="text-indent:2em">在编译完成之后,就可以通过以下命令运行Android虚拟机了，命令如下:
-
-
 ```bash
 # 如果是在编译完后运行虚拟机，由于之前已经执行过source和lunch命令了，可以直接运行：
 emulator

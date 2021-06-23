@@ -61,16 +61,99 @@ git clone https://aosp.tuna.tsinghua.edu.cn/kernel/msm.git
 
 <p style="text-indent:2em"><b>含义：</b>&nbsp&nbsp&nbsp&nbsp AOSP代码目录含义
 
-| 目录     | 描述                                                         |
-| -------- | ------------------------------------------------------------ |
-| art      | ART虚拟机做为Dalvik虚拟机的替代,字节码翻译优化成机器码从运行时提早到安装,以空间换时间达到更流畅的体验. |
-| bionic   | C/C++运行时库,在NDK程序中很大一部分调用就是这里的程序        |
-| bootable | 启动引导相关代码,用于Android装载和启动程序,其中就包括bootloader和recovery.bootloader是Android中唯一在Linux内核之前执行的程序.通过这段程序可以初始化硬件,建立内存控件的映射图等,总之,bootloader就是为Linux内核准备合适的运行环境. |
-| build    | 存放系统编译规则及generic等基础开发包配置,用于编译Android源代码以及构建system.img，ramdisk.img等文件的工具. |
-|          |                                                              |
-|          |                                                              |
-|          |                                                              |
-|          |                                                              |
+| 目录             | 描述                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| art              | 全新的ART运行环境，ART虚拟机做为Dalvik虚拟机的替代,字节码翻译优化成机器码从运行时提早到安装,以空间换时间达到更流畅的体验. |
+| bionic           | C/C++运行时库,在NDK程序中很大一部分调用就是这里的程序        |
+| bootable         | 启动引导相关代码,用于Android装载和启动程序,其中就包括bootloader和recovery.bootloader是Android中唯一在Linux内核之前执行的程序.通过这段程序可以初始化硬件,建立内存控件的映射图等,总之,bootloader就是为Linux内核准备合适的运行环境. |
+| build            | 存放系统编译规则及generic等基础开发包配置,用于编译Android源代码以及构建system.img，ramdisk.img等文件的工具. |
+| compatibility    | Android兼容性计划                                            |
+| cts              | Android兼容性测试套件标准                                    |
+| dalvik           | dalvik JAVA虚拟机                                            |
+| developers       | 开发者目录,展现了当前版本的新特性                            |
+| development      | 应用程序开发相关,示例以及开发工具 主要是给系统开发者使用     |
+| device           | 设备相关配置,各品牌手机在硬件上会有差别，厂商会对源码进行定制 修改它的某些部分来配合自家硬件的特性 |
+| external         | android使用的一些开源模组相关文件                            |
+| frameworks       | 应用程序核心框架，Android系统核心部分，由Java和C++编写       |
+| hardware         | 主要是硬件抽象层的代码，部分厂家开源的硬解适配层HAL代码      |
+| kernel           | Android Linux 内核，，不过Android默认不提供，需要单独下载    |
+| libcore          | Java核心库相关文件，包括java api的源码                       |
+| libnativehelper  | 动态库，实现JNI库的基础                                      |
+| ndk              | NDK相关代码，帮助开发人员在应用程序中嵌入C/C++代码           |
+| out              | 编译完成后代码输出在此目录                                   |
+| packages         | 应用程序包                                                   |
+| pdk              | Plug Development Kit 的缩写，本地开发套件，google减小碎片化的东西 |
+| platform_testing | 平台测试                                                     |
+| prebuilts        | x86和arm架构下预编译好的一些资源，包括模拟器,内核文件        |
+| sdk              | 在开发环境中使用的工具，如ddms，draw9path，sdkmanager，sdk和模拟器 |
+| system           | 底层文件系统库、应用和组件 构成 Android的基本系统            |
+| test             |                                                              |
+| toolchain        | 工具链文件                                                   |
+| tools            | 工具文件                                                     |
+| vendor           |                                                              |
+| Android.bp       | Android7.0开始代替Android.mk文件，它是告诉ndk将jni代码编译成动态库的一个脚本 |
+| Makefile         | 全局Makefile文件，用来定义编译规则                           |
 
+##### 应用层packages部分
 
+应用层位于整个Android系统的最上层，开发者开发的应用程序以及系统内置的应用程序都是在应用层。源码根目录中的packages目录对应着系统应用层。它的目录结构：
 
+| packages目录 | 描述           |
+| ------------ | -------------- |
+| apps         | 核心应用程序   |
+| experimental | 第三方应用程序 |
+| inputmethods | 输入法目录     |
+| modules      |                |
+| providers    | 内容提供者目录 |
+| screensavers | 屏幕保护       |
+| services     | 通信服务       |
+| wallpapers   | 墙纸           |
+
+## 应用框架层
+
+应用框架层是系统的核心部分，一方面向上提供接口给应用层调用，另一方面向下与C/C++程序库以及硬件抽象层等进行衔接。其中目录结构如下：
+
+- av：多媒体框架
+- base：Android源码的主要核心目录
+- compile：编译相关
+- ex：文件解析器
+- hardware：硬件适配接口
+- layoutlib：布局相关
+- minikin：Android原生字体，连体字效果
+- ml：机器学习
+- multidex：多dex加载器
+- native：native实现
+- opt：一些软件
+- rs：Render Script，可创建3D接口
+- support：framework支持文件
+- wilhelm：基于Khronos的OpenSL ES/OpenMAX AL的audio/multimedia实现
+
+其中base目录中是应用框架层的主要核心代码，目录结构如下：
+
+- apct-tests：性能优化测试
+- api：android应用框架层声明类、属性和资源
+- cmds：android系统启动时用到的commands
+- core：framework的核心框架组件
+- data：android下的资源(字体、声音、视频、软盘等)
+- docs：android项目说明
+- drm：实现权限管理，数字内容解密等模块的工作
+- graphics：图像渲染模块
+- keystore：秘钥库
+- libs：库信息(界面、存储、USB)
+- location：位置信息
+- media：手机媒体管理(音频、视频等)
+- native：本地方法实现(传感器、输入、界面、窗体)
+- nfc-extras：近场通讯
+- obex：蓝牙
+- opengl：2D和3D图形绘制
+- packages：框架层的实现(界面、服务、存储)
+- proto：协议框架
+- rs：资源框架
+- samples：例子程序
+- sax：xml解析器
+- services：各种服务程序
+- telecomm：telecomm通信框架
+- telephony：电话通讯框架
+- tests：各种测试
+- vr：虚拟现实相关
+- wifi：wifi模块
