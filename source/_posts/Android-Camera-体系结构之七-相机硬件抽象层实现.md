@@ -19,7 +19,7 @@ tags:
 
 #### camx/中有如下几个主要目录：
 
-- core/ ：用于存放camx的核心实现模块，如Session、Manager、Pipeline等结构的实现。其中还包含了主要用于实现HAL3接口的hal/(halutils/)目录，以及负责与CHI进行交互的chi/目录
+- core/ ：用于存放camx的核心实现模块，如Session、Manager、Pipeline等结构的实现。其中还包含了主要用于实现HAL3接口的hal/目录，以及负责与CHI进行交互的chi/目录
 - csl/：用于存放主要负责camx与camera driver的通讯模块，为camx提供了统一的Camera driver控制接口
 - hwl/：硬件流程和用于存放自身具有独立运算能力的硬件node的实现，包括bps、ipe、ife、jpeg等，该部分node受csl管理。
 - swl/：软件流程和用于存放自身并不具有独立运算能力必须依靠CPU才能实现的node的实现。包括stats、jpeg、sensor等。

@@ -1,6 +1,6 @@
 ---
-title: Android 源码管理之三 git
-date: 2021-06-18 14:57:19
+title: Android 源码管理之二 git仓库管理工具
+date: 2021-06-25 11:14:08
 categories: 
 tags:
 - Android
@@ -8,11 +8,11 @@ tags:
 comments: true
 ---
 
-![img](git/1460000023734707)
+![img](Android-源码管理之二-git仓库管理工具/1460000023734707)
 
 ### Git  流程图
 
-![img](git/1460000023734708)
+![img](Android-源码管理之二-git仓库管理工具/1460000023734708)
 
 - <font color="#dd0000">`Workspace`</font>：工作区
 - <font color="#dd0000">`Index/Stage`</font>：暂存区
