@@ -193,7 +193,7 @@ review="https://android-review.googlesource.com/" />
 $ repo download <TARGET> <CHANGE>
 ```
 
-<p style="text-indent:2em">upload是把改动内容提交到Gerrit，download是从Gerrit下载改动。与upload一样download命令也是配合Gerrit使用的<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#00dd00">&ltTARGET&gt</font>：指定要下载的PROJECT，譬如platform/frameworks/base, platform/packages/apps/Mms<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#00dd00">&ltCHANGE&gt</font>：指定要下载的改动内容。这个值不是Commit-ID，也不是Change-ID，而是一个Review任务URL的最后几位数字。 譬如，AOSP的一个Review任务<a href="https://android-review.googlesource.com/#/c/23823/">https://android-review.google...</a>，其中23823就是<font color="#00dd00">&ltCHANGE&gt</font>。</p>
+<p style="text-indent:2em">upload是把改动内容提交到Gerrit，download是从Gerrit下载改动。与upload一样download命令也是配合Gerrit使用的<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</font color="#00dd00">&ltTARGET&gt</font>：指定要下载的PROJECT，譬如platform/frameworks/base, platform/packages/apps/Mms<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<font color="#00dd00">&ltCHANGE&gt</font>：指定要下载的改动内容。这个值不是Commit-ID，也不是Change-ID，而是一个Review任务URL的最后几位数字。 譬如，AOSP的一个Review任务<a href="https://android-review.googlesource.com/#/c/23823/">https://android-review.google...</a>，其中23823就是<font color="#00dd00">&ltCHANGE&gt</font>。</p>
 
 #### forall
 
