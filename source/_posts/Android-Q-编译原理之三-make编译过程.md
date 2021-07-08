@@ -1,6 +1,6 @@
 ---
-title: Android Q 编译系统之三 make编译过程
-date: 2021-06-17 17:24:02
+title: Android Q 编译原理之三 make编译过程
+date: 2021-07-08 10:43:19
 categories:
 - Compiler
 tags:
@@ -16,19 +16,19 @@ comments: true
 
 <p style="text-indent:2em">Google在Android 7.0之后，引入了Soong构建系统，旨在取代 GNU Make的编译，它利用Kati GNU Make克隆工具和Ninja构建系统组件来加速Android的构建。Make构建系统得到了广泛的支持和使用，但在Android层面变得缓慢、容易出错、无法扩展且难以测试。Soong构建系统正好提供了Android Build所需的灵活性。因此在Android10.0 上，make执行后，我们走的是soong构建环境。</p>
 
-![Android系统的编译历程](Android-Q-编译系统之三-make编译过程/Android系统的编译历程.jpg)
+![Android系统的编译历程](Android-Q-编译原理之三-make编译过程/Android系统的编译历程.jpg)
 
 ### Soong编译系统家族成员
 
 <p style="text-indent:2em"> 从下图可知，mk文件被编译成了out/build-aosp_arm.ninja和out/build-aosp_arm-package.ninja，bp文件被编译成了out/soong/build.ninja，这三个ninja文件又被合并成out/combined-aosp_arm.ninja，最终通过ninja工具来编译out/combined-aosp_arm.ninja完成最终的编译。</p>
 
-![Soong编译系统家族成员](Android-Q-编译系统之三-make编译过程/Soong编译系统家族成员.jpg)
+![Soong编译系统家族成员](Android-Q-编译原理之三-make编译过程/Soong编译系统家族成员.jpg)
 
 ### make的流程图
 
 <p style="text-indent:2em">soong构建的流程图如下图所示：</p>
 
-![img](Android-Q-编译系统之三-make编译过程/soong构建.jpg)
+![img](Android-Q-编译原理之三-make编译过程/soong构建.jpg)
 
 ### make()
 
@@ -66,7 +66,7 @@ function get_make_command()
 
 #### soong_ui.bash调用栈
 
-![img](Android-Q-编译系统之三-make编译过程/soong_ui.bash调用栈.png)
+![img](Android-Q-编译原理之三-make编译过程/soong_ui.bash调用栈.png)
 
 #### soong_ui.bash执行过程：
 

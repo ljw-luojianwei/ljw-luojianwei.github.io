@@ -8,9 +8,9 @@ tags:
 comments: true
 ---
 
-<p style="text-indent:2em">Android的版本一直快速的进行迭代着，从我们以前最常见的Android 4.4一直发展到了今天的Android 13.0版本(即Android K到Android T)，Android版本的快速迭代对于消费者来说是一件好事，但是对于开发者来说各种适配各种改造有时候吃翔的心情都有了。而对于Android版本的适配和各种改造的第一步就是从编译Android源码开始，可是不幸的是随着Android版本的迭代连编译Android源码的相关流程都发生了翻天覆地的变化。本系列基于Android 10.0 进行编译系统的体系的一个梳理。</p>
+<p style="text-indent:2em">Android 的版本一直快速的进行迭代着，从我们以前最常见的 Android 4.4 一直发展到了今天的 Android 13.0 版本(即 Android K 到 Android T)，Android 版本的快速迭代对于消费者来说是一件好事，但是对于开发者来说各种适配各种改造有时候就很痛苦了。而对于 Android 版本的适配和各种改造的第一步就是从编译 Android 源码开始，可是不幸的是随着 Android 版本的迭代连编译 Android 源码的相关流程都发生了翻天覆地的变化。本系列基于 Android 10.0 进行编译系统的体系的一个梳理。</p>
 
-Android各个版本的对应关系如下:
+Android 各个版本的对应关系如下:
 
 | 4    | 5    | 6    | 7    | 8    | 9    | 10   | 11   | 12   | 13   |      |
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |

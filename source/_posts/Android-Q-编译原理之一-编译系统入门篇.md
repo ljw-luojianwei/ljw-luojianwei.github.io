@@ -10,29 +10,28 @@ comments: true
 
 ### 概述
 
-<p style="text-indent:2em">在Android 7.0之前，Android编译系统使用GNU Make描述和shell来构建编译规则，模块定义都使用Android.mk进行定义，Android.mk的本质就是Makefile，但是随着Android的工程越来越大，包含的模块越来越多，以Makefile组织的项目编译时间越来越长。这样下去Google工程师觉得不行，得要优化。因此，在Android7.0开始，Google引入了<a href="https://ninja-build.org" style="text-decoration:none">ninja</a>编译系统来取代之前使用的make，相对于Makefile来说Ninja在大的项目管理中速度和并行方面有突出的优势。由于之前的Android.mk数据实在巨大，不可能把所有的Android.mk改写成ninja的构建规则，因此Google加入了一个kati工具，用于将Android.mk转换成ninja的构建规则文件buildxxx.ninja，再使用ninja来进行构建工作。编译速度快了一些，但是既然要干，那就干个大的，最终目标要把make都取代，于是从Android8.0开始，Google为了进一步淘汰Makefile，因此引入了Android.bp文件来替换之前的Android.mk。Android.bp只是一个纯粹的配置文件，不包括分支、循环语句等控制流程，本质上就是一个json配置文件。通过androidmk可以将Android.mk转换成Android.bp，但针对没有分支、循环等流程控制的Android.mk才有效。同时还引入Soong这个工具，Android.bp通过Blueprint+Soong转换成ninja的构建规则文件build.ninja，再使用ninja来进行构建工作。但之前的模块全部是用Android.mk来定义的，google不可能一下子把所有模块都修改成Android.bp，只能逐步替换。Android10.0上，mk和bp编译的列表可以从 \out\.module_paths中的Android.bp.list、Android.mk.list中看到，Android10.0还有400多个mk文件没有被替换完，Google任重道远。
-
+<p style="text-indent:2em">在 Android 7.0 发布之前，Android 仅使用 GNU Make 描述和执行其构建规则，模块定义都使用 Android.mk 进行定义，Android.mk 的本质就是 Makefile，Make 构建系统得到了广泛的支持和使用，但随着Android 的工程越来越大，包含的模块越来越多，以 Makefile 组织的项目编译时间越来越长，在 Android 层面变得缓慢、容易出错、无法扩展且难以测试，Soong 构建系统正好提供了 Android build 所需的灵活性。</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因此，从 Android 7.0 开始，Google 就先引入了<a href="https://ninja-build.org" style="text-decoration:none"> ninja 编译系统 </a>来取代之前使用的 make，相对于 Makefile 来说 Ninja 在大的项目管理中速度和并行方面有突出的优势。由于之前的Android.mk 数据实在巨大，不可能把所有的 Android.mk 改写成 ninja 的构建规则，因此 Google 加入了一个 kati 工具，用于将 Android.mk 转换成 ninja 的构建规则文件 buildxxx.ninja，再使用 ninja 来进行构建工作。</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编译速度快了一些，但是既然要干，那就干个大的，最终目标要把 make 都取代，于是从 Android 8.0 开始，Google 为了进一步淘汰 Makefile，因此引入了 Android.bp 文件来替换之前的 Android.mk，Android.bp 只是一个纯粹的配置文件，不包括分支、循环语句等控制流程，本质上就是一个 json 配置文件。同时还引入 Soong 这个构建系统，Android.bp 通过 Blueprint+Soong 转换成 ninja 的构建规则文件 build.ninja，再使用 ninja 来进行构建工作。也可以通过 androidmk 将 Android.mk 转换成 Android.bp，但针对没有分支、循环等流程控制的 Android.mk 才有效。</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;但之前的模块全部是用 Android.mk 来定义的，Google 不可能一下子把所有模块都修改成 Android.bp，只能逐步替换。Android 10.0 上，mk 和 bp 编译的列表可以从 \out\.module_paths 中的 Android.bp.list、Android.mk.list 中看到，Android10.0 还有400多个 mk 文件没有被替换完，Google 任重道远。</p>
 
 ![android_build](Android-Q-编译原理之一-编译系统入门篇/android_build.jpg)
 
 ###  Android编译演进过程：
 
 ```
-Android 7.0 之前使用GNU Make
-Android 7.0 引入ninja编译框架、kati转换工具。
-Android 8.0 引入Android.bp和soong构建系统，默认打开Android.bp
-Android 9.0 强制使用Android.bp
+Android 7.0 之前使用 GNU Make
+Android 7.0 引入 ninja 编译框架、kati 转换工具。
+Android 8.0 引入 Android.bp 和 soong 构建系统，默认打开 Android.bp
+Android 9.0 强制使用 Android.bp
 ```
 
-### 编译系统中Makefile、Android.mk、Ninja、Kati、Soong、Blueprint、Android.bp概念介绍
+### 构建系统中Makefile、Android.mk、Ninja、Kati、Soong、Blueprint、Android.bp概念介绍
 
-<p style="text-indent:2em"><b>Makefile </b>Android平台的编译系统其实就是用Makefile写出来的一个独立项目。它定义了编译的规则，实现了“自动化编译”，不仅把分散在数百个Git库中的代码整合起来、统一编译， 而且还把产物分门别类地输出到一个目录，打包成手机ROM，还可以生成应用开发时所使用的SDK、NDK等。因此，采用Makefile编写的编译系统，也可以称为Makefile编译系统。Makefile默认文件名为Makefile或makefile，也常用.make或.mk作为文件后缀。</p>
+<p style="text-indent:2em"><b>Makefile </b>Android 平台的编译系统其实就是用 Makefile 写出来的一个独立项目。它定义了编译的规则，实现了“自动化编译”，不仅把分散在数百个 Git 库中的代码整合起来、统一编译， 而且还把产物分门别类地输出到一个目录，打包成手机 ROM，还可以生成应用开发时所使用的 SDK、NDK 等。因此，采用 Makefile 编写的编译系统，也可以称为 Makefile 编译系统。Makefile 默认文件名为 Makefile 或 makefile，也常用 .make 或 .mk 作为文件后缀。</p>
 
-<p style="text-indent:2em"><b>Android.mk</b> Makefile编译系统的一部分，定义了一个模块的必要参数，使模块随着平台编译。通俗来讲就是告诉编译系统，以什么样的规则编译你的源代码，并生成对应的目标文件。</p>
+<p style="text-indent:2em"><b>Android.mk</b> Makefile 编译系统的一部分，定义了一个模块的必要参数，使模块随着平台编译。通俗来讲就是告诉编译系统，以什么样的规则编译你的源代码，并生成对应的目标文件。</p>
 
-<p style="text-indent:2em"><b>Ninja </b>ninja是一个编译框架，会根据相应的ninja格式的配置文件进行编译，但是ninja文件一般不会手动修改，而是通过将Android.bp文件转换成ninja格文件来编译。可以看作是一个致力于速度的小型编译系统，如果把其他的编译系统看作高级语言，那么Ninja 目标就是汇编。Ninja的默认文件名是build.ninja，其它文件以.ninja为后缀。Makefile与Ninja的区别在于, Makefile是设计来给开发编写的，而Ninja设计出来是给其它程序生成的。如果Makefile是Java语言，那么Ninja就是汇编语言。</p>
+<p style="text-indent:2em"><b>Ninja </b>ninja 是一个编译框架，会根据相应的 ninja 格式的配置文件进行编译，但是 ninja 文件一般不会手动修改，而是通过将 Android.bp 文件转换成 ninja 格文件来编译。Ninja 的默认文件名是 build.ninja，其它文件以 .ninja 为后缀。Makefile 与 Ninja 的核心区别在于设计哲学, Makefile 是设计来给开发编写的，而 Ninja 设计出来是给其它程序生成的。如果说 Makefile 是 C 语言，那么 Ninja 就是汇编语言，如果说 Makefile 是一个 DSL，那么 Ninja 就是一种配置文件。二者的相同点都是为了控制编译流程而设计，所以，他们的核心功能都是指定目标，以及目标之间的依赖关系，自动计算执行顺序。执行 Makefile 的程序，默认是 GNU make，也有一些其它的实现，Ninja 的执行程序，就是 ninja 命令。在 Android 项目中，make 需要编译主机上安装，作为环境的一部分，而 ninja命令则是 Android 平台代码自带，位于 prebuilts/build-tools/linux-x86/bin。</p>
 
-<p style="text-indent:2em"><b>Kati </b>kati是Google专为Android开发的一个基于Golang和C++的工具，主要功能是把Android中的Android.mk文件转换成Ninja文件。Makefile文件会通过kati转换为Ninja文件。代码路径是build/kati，编译后的产物是ckati。Kati代码是开源的，可以把它clone下来，简单分析下它的运行原理，在Android全编译以后，可以使用ninja来编译已经生成的.ninja文件。执行编译odex编译命令。</p>
+<p style="text-indent:2em"><b>Kati </b>kati 是 Google 专为 Android 开发的一个基于 Golang 和 C++ 的工具，主要功能是把 Android 中的 Android.mk 文件转换成 Ninja 文件。Makefile 文件会通过 kati 转换为 Ninja 文件。在 Android 10.0 中代码路径是 build/kati ，编译后的产物是 ckati，位于 prebuilts/build-tools/linux-x86/bin。在 Android 11.0 之后就只保留工具 ckati 了，Kati 代码是开源的，可以把它 clone 下来，简单分析下它的运行原理。在 Android 全编译以后，可以使用 ninja 来编译已经生成的 .ninja文件。执行编译 odex 编译命令。</p>
 
 <p style="text-indent:2em"><b>Blueprint和Soong </b>Blueprint是生成、解析Android.bp的工具，用于解析Android.bp文件翻译成Ninja语法文件，是Soong的一部分。Soong是谷歌用来替代此前的Makefile编译系统的替代品，类似于之前的Makefile编译系统的核心，Soong负责提供Android.bp文件的语义解析，并将之转换为Ninja文件。Soong还会编译生成一个androidmk命令，用于将Android.mk文件转换为Android.bp文件，不过这个转换功能仅限于没有分支、循环等流程控制的Android.mk才有效。Soong是负责Android编译而设计的工具，而Blueprint只是解析文件格式，Soong解析内容的具体含义。Blueprint负责解析Android.bp文件内容，Blueprint类似一个处理相关语法的库文件，Soong则是定义具体如何处理相应的语法以及命令实现。通俗来讲就是Soong借助于Blueprint定义的Android.bp语法，完成Android.bp的解析，最终转换成Ninja文件。Blueprint和Soong都是由Golang写的项目，从Android 7.0，prebuilts/go/目录下新增Golang所需的运行环境，在编译时使用。因为Soong和Blueprint是Google为Android.bp特别定制的工具，所以不要摘出来单独来操作。</p>
 
