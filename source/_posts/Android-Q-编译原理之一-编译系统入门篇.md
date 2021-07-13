@@ -236,7 +236,7 @@ lunch 30
 3. ##### 开始编译
 
 ```bash
-make -j12  2>&1 | tee build.log
+m -j12  2>&1 | tee build.log
 ```
 
 <p style="text-indent:2em">通过-jN参数来设置编译的并行任务数，以提高编译速度，这里N值最好选在核数到2倍核数之间。编译成功后会在 out/target/product/generic_x86/目录生成了三个重要的镜像文件： system.img、userdata.img、ramdisk.img。大概介绍着三个镜像文件：</p>
@@ -333,3 +333,4 @@ sudo chmod +s fastboot
 
 
 
+Android源码工程默认不包含Linux Kernel代码，而是使用预先编译好的内核(/prebuilts/qemu-kernel/[cpu架构]/kernel-qemu文件)。
