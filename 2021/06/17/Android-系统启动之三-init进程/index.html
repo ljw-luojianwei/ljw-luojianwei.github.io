@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概述init进程是linux系统中用户空间的第一个进程，进程号为1。当bootloader启动后，启动kernel，kernel启动完后，在用户空间启动init进程，再通过init进程来读取init.rc中的相关配置，从而来启动其他相关进程以及其他操作。init进程被赋予了很多重要工作，init进程启动主要分为两个阶段：   第一个阶段完成以下内容：   ueventd&#x2F;watchdogd跳转及环">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 系统启动之三 init进程">
+<meta property="og:url" content="https://luojianwei.top/2021/06/17/Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E4%B8%89-init%E8%BF%9B%E7%A8%8B/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="概述init进程是linux系统中用户空间的第一个进程，进程号为1。当bootloader启动后，启动kernel，kernel启动完后，在用户空间启动init进程，再通过init进程来读取init.rc中的相关配置，从而来启动其他相关进程以及其他操作。init进程被赋予了很多重要工作，init进程启动主要分为两个阶段：   第一个阶段完成以下内容：   ueventd&#x2F;watchdogd跳转及环">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luojianwei.top/.top//init%E8%BF%9B%E7%A8%8B%E5%A6%82%E4%BD%95%E8%A2%AB%E5%90%AF%E5%8A%A8%EF%BC%9F.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//init%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8%E5%90%8E.jpg">
+<meta property="article:published_time" content="2021-06-17T09:17:05.000Z">
+<meta property="article:modified_time" content="2021-07-13T10:16:18.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luojianwei.top/.top//init%E8%BF%9B%E7%A8%8B%E5%A6%82%E4%BD%95%E8%A2%AB%E5%90%AF%E5%8A%A8%EF%BC%9F.jpg">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/06/17/Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E4%B8%89-init%E8%BF%9B%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;17&#x2F;Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E4%B8%89-init%E8%BF%9B%E7%A8%8B&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;17&#x2F;Android-系统启动之三-init进程&#x2F;&quot;,&quot;title&quot;:&quot;Android 系统启动之三 init进程&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android 系统启动之三 init进程 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Init%E8%BF%9B%E7%A8%8B%E5%A6%82%E4%BD%95%E8%A2%AB%E5%90%AF%E5%8A%A8%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">Init进程如何被启动？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Init%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8%E5%90%8E%EF%BC%8C%E5%81%9A%E4%BA%86%E5%93%AA%E4%BA%9B%E4%BA%8B%EF%BC%9F"><span class="nav-number">2.2.</span> <span class="nav-text">Init进程启动后，做了哪些事？</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/17/Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E4%B8%89-init%E8%BF%9B%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android 系统启动之三 init进程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-17 17:17:05" itemprop="dateCreated datePublished" datetime="2021-06-17T17:17:05+08:00">2021-06-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-13 18:16:18" itemprop="dateModified" datetime="2021-07-13T18:16:18+08:00">2021-07-13</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/System/" itemprop="url" rel="index"><span itemprop="name">System</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p style="text-indent:2em">init进程是linux系统中用户空间的第一个进程，进程号为1。当bootloader启动后，启动kernel，kernel启动完后，在用户空间启动init进程，再通过init进程来读取init.rc中的相关配置，从而来启动其他相关进程以及其他操作。init进程被赋予了很多重要工作，init进程启动主要分为两个阶段：</p>
+
+<ol>
+<li>第一个阶段完成以下内容：</li>
+</ol>
+<ul>
+<li>ueventd/watchdogd跳转及环境变量设置</li>
+<li>挂载文件系统并创建目录</li>
+<li>初始化日志输出、挂载分区设备</li>
+<li>启用SELinux安全策略</li>
+<li>开始第二阶段前的准备</li>
+</ul>
+<ol start="2">
+<li>第二个阶段完成以下内容：</li>
+</ol>
+<ul>
+<li>初始化属性系统</li>
+<li>执行SELinux第二阶段并恢复一些文件安全上下文</li>
+<li>新建epoll并初始化子进程终止信号处理函数</li>
+<li>设置其他系统属性并开启属性服务</li>
+</ul>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><h4 id="Init进程如何被启动？"><a href="#Init进程如何被启动？" class="headerlink" title="Init进程如何被启动？"></a>Init进程如何被启动？</h4><p><img src="/.top//init%E8%BF%9B%E7%A8%8B%E5%A6%82%E4%BD%95%E8%A2%AB%E5%90%AF%E5%8A%A8%EF%BC%9F.jpg" alt="img"></p>
+<p style="text-indent:2em">Init进程是在Kernel启动后，启动的第一个用户空间进程，PID为1。</p>
+
+<p style="text-indent:2em">kernel_init启动后，完成一些init的初始化操作，然后去系统根目录下依次找 ramdisk_execute_command 和 execute_command 设置的应用程序，如果这两个目录都找不到，就依次去根目录下找/sbin/init，/etc/init，/bin/init，/bin/sh 这四个应用程序进行启动，只要这些应用程序有一个启动了，其他就不启动了。</p>
+
+<p style="text-indent:2em">Android系统一般会在根目录下放一个init的可执行文件，也就是说Linux系统的init进程在内核初始化完成后，就直接执行init这个文件。</p>
+
+<h4 id="Init进程启动后，做了哪些事？"><a href="#Init进程启动后，做了哪些事？" class="headerlink" title="Init进程启动后，做了哪些事？"></a>Init进程启动后，做了哪些事？</h4><p><img src="/.top//init%E8%BF%9B%E7%A8%8B%E5%90%AF%E5%8A%A8%E5%90%8E.jpg" alt="img"></p>
+<p style="text-indent:2em">Init进程启动后，首先挂载文件系统、再挂载相应的分区，启动SELinux安全策略，启动属性服务，解析rc文件，并启动相应属性服务进程，初始化epoll，依次设置signal、property、keychord这3个fd可读时相对应的回调函数。进入无线循环，用来响应各个进程的变化与重建。</p>
+
+<p><strong>init.rc</strong>是一个规定init进程行为和动作的配置文件。init进程可以做哪些事情，都由它规定。init.rc文件中只包含两种声明，on和service，我们可以把on称为init行为，把service称为init服务。service声明了init服务以及init服务的各种行为。开机启动进程就是这里的init服务。service只定义init服务，但不能让init服务做任何事情，如果你需要init服务能够产生启动或者停止等相关动作，你就需要on，每个on下面的有各种命令，其中就包括很多对init服务的操作。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/17/Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E4%BA%8C-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E7%AE%80%E8%BF%B0/" rel="prev" title="Android 系统启动之二 启动流程简述">
+                  <i class="fa fa-chevron-left"></i> Android 系统启动之二 启动流程简述
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/17/Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E5%9B%9B-Zygote%E8%BF%9B%E7%A8%8B/" rel="next" title="Android 系统启动之四 Zygote进程">
+                  Android 系统启动之四 Zygote进程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

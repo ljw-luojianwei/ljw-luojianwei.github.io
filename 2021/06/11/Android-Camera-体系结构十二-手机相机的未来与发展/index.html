@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Android相机发展至今，通过开发者对框架的不断优化，算法人员对图像处理算法的不断提升，硬件工程师对硬件性能地不断调教，换来了在某些领域完全可以媲美专业相机的成像效果，这些成绩是有目共睹的，但是我们不能仅仅着眼于过去，试着将眼光放得长远些，如何将Android相机推向更高的维度，使其成为手机相机的王者，想必这是每一个热衷于技术的开发者都需要反复思考的问题，当然就我个人而言，对于它的未来，有着我自">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Camera 体系结构十二 手机相机的未来与发展">
+<meta property="og:url" content="https://luojianwei.top/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%BA%8C-%E6%89%8B%E6%9C%BA%E7%9B%B8%E6%9C%BA%E7%9A%84%E6%9C%AA%E6%9D%A5%E4%B8%8E%E5%8F%91%E5%B1%95/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="Android相机发展至今，通过开发者对框架的不断优化，算法人员对图像处理算法的不断提升，硬件工程师对硬件性能地不断调教，换来了在某些领域完全可以媲美专业相机的成像效果，这些成绩是有目共睹的，但是我们不能仅仅着眼于过去，试着将眼光放得长远些，如何将Android相机推向更高的维度，使其成为手机相机的王者，想必这是每一个热衷于技术的开发者都需要反复思考的问题，当然就我个人而言，对于它的未来，有着我自">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-11T07:07:58.000Z">
+<meta property="article:modified_time" content="2021-06-11T07:08:28.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%BA%8C-%E6%89%8B%E6%9C%BA%E7%9B%B8%E6%9C%BA%E7%9A%84%E6%9C%AA%E6%9D%A5%E4%B8%8E%E5%8F%91%E5%B1%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%BA%8C-%E6%89%8B%E6%9C%BA%E7%9B%B8%E6%9C%BA%E7%9A%84%E6%9C%AA%E6%9D%A5%E4%B8%8E%E5%8F%91%E5%B1%95&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;11&#x2F;Android-Camera-体系结构十二-手机相机的未来与发展&#x2F;&quot;,&quot;title&quot;:&quot;Android Camera 体系结构十二 手机相机的未来与发展&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android Camera 体系结构十二 手机相机的未来与发展 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%BA%8C-%E6%89%8B%E6%9C%BA%E7%9B%B8%E6%9C%BA%E7%9A%84%E6%9C%AA%E6%9D%A5%E4%B8%8E%E5%8F%91%E5%B1%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android Camera 体系结构十二 手机相机的未来与发展
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-06-11 15:07:58 / 修改时间：15:08:28" itemprop="dateCreated datePublished" datetime="2021-06-11T15:07:58+08:00">2021-06-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Camera/" itemprop="url" rel="index"><span itemprop="name">Camera</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p style="text-indent:2em">Android相机发展至今，通过开发者对框架的不断优化，算法人员对图像处理算法的不断提升，硬件工程师对硬件性能地不断调教，换来了在某些领域完全可以媲美专业相机的成像效果，这些成绩是有目共睹的，但是我们不能仅仅着眼于过去，试着将眼光放得长远些，如何将Android相机推向更高的维度，使其成为手机相机的王者，想必这是每一个热衷于技术的开发者都需要反复思考的问题，当然就我个人而言，对于它的未来，有着我自己的思考。</p>
+
+<p style="text-indent:2em">Android相机，首先是基于Android系统，所以对于系统端的优化，我相信Google依然会不断的进行完善，特别地，谷歌一直奉行着接口与实现相分离的设计原则， 这就将很多的实现让渡给各自有实现需求的开发者，所以其实我们有很大的创作空间，比如App部分，通过设计良好的业务框架，让整个相机应用在一个高效且稳定的框架中运行，处理来自用户需求，下发图像需求至相机框架中。又比如对于Camera Hal的实现，其实这部分高通做的已经相当完备，从QCamera&MM-Camera架构到而今的CamX-CHI，都是在为上层提供更好地相机而努力着，但是框架谈不上完美，只能是比较符合当下实际情况，针对CamX-CHI而言，存在着内存占用过大以及CPU负载较高的问题，这些也是我们作为开发者所需要去攻克的难题。</p>
+
+<p style="text-indent:2em">麻雀虽小，五脏俱全，Android相机的小体积中俨然具备着一个完整的相机硬件体系，从光圈到透镜组，再到感光器件最后到后期的图像处理模块，每一个器件都承担着自己特有的使命。对于整套硬件体系而言，对于每一个器件的一个小小的提升都有可能使其在一系列竞争者中脱颖而出，比如某品牌的一亿像素，由于机身厚度的限制，大尺寸的CMOS会给透镜组乃至后期的算法处理带来不小的压力。</p>
+
+<p style="text-indent:2em">一张完美的图像，仅仅依靠前期的成像系统是远远不够的，就像当我们看见一副美景时，心中所呈现的并不是单单眼前的景色而已，我们所独有的人生阅历会在我们心中不经意地给其铺上一层独特的滤镜，赋予其独特的意义，而对于相机系统而言，算法便是其给图像铺上灵魂滤镜的关键因素，不同的算法可以赋予图像不同的属性，但是评价算法的好坏，经常会通过效果与效率两个方面来衡量，所以图像的更多意义，需要更多的算法来实现，而算法的更好更快处理便是其实现的目标，一个好的算法往往能够为平庸无奇的图像带来质的飞跃。</p>
+
+<p style="text-indent:2em">而今的Android相机已经完全不局限于记录身边的美好，而是在创造属于每个人的美好，可以通过它来和相隔万里的亲人朋友进行视频通讯，可以编辑属于自己的独一无二的图像表情，可以让多个自己存在在同一个空间中，以及通过萌拍模式记录下自己的可爱瞬间等，这一切的一切都极大的扩展了Android相机的功能性和可玩性，所以针对新Feature的开发，势必是一个大的趋势，这也印证了一个道理，对于相机的开发，我们有时候不是在满足需求，而是在创造需求。</p>
+
+<p style="text-indent:2em">最后，纵观Android历史，不难发现谷歌自始至终秉承着开源普惠大众的宗旨，从未停止过对Android系统的迭代优化，在整个Android相机系统架构中，不难发现接口与实现相分离的这一简单设计原则在其身上随处可见，这样既保证了整体架构的足够稳定，也实现了系统细节实现的多样性，同时也体现出了强大的灵活性，总的来讲，这样一套优秀的架构体系并且依托如今强大的硬件设备，加之全球开发者们在算法、新feature的不懈努力，我相信Android 相机会在以后的发展中一路高歌猛进，超越苹果成为手机相机领域的王者。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%B8%80-%E5%AE%89%E5%8D%93%E7%9B%B8%E6%9C%BA%E6%9E%B6%E6%9E%84%E6%80%BB%E7%BB%93/" rel="prev" title="Android Camera 体系结构十一 安卓相机架构总结">
+                  <i class="fa fa-chevron-left"></i> Android Camera 体系结构十一 安卓相机架构总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%80-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E7%AF%87/" rel="next" title="Android Q 编译原理之一 编译系统入门篇">
+                  Android Q 编译原理之一 编译系统入门篇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概述上一节针对Android编译系统做了一个笼统的说明，这一节针对编译环境初始化做一下详细的展示。  初始化命令介绍12# 初始化命令：source build&#x2F;envsetup.sh  envsetup.sh 构建代码：  1234...						# 1validate_current_shell      # 2source_vendorsetup          # 3 addcompl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Q 编译原理之二 编译环境初始化">
+<meta property="og:url" content="https://luojianwei.top/2021/06/16/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%BA%8C-%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="概述上一节针对Android编译系统做了一个笼统的说明，这一节针对编译环境初始化做一下详细的展示。  初始化命令介绍12# 初始化命令：source build&#x2F;envsetup.sh  envsetup.sh 构建代码：  1234...						# 1validate_current_shell      # 2source_vendorsetup          # 3 addcompl">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luojianwei.top/.top//envsetup.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//config.jpg">
+<meta property="article:published_time" content="2021-06-16T08:23:55.000Z">
+<meta property="article:modified_time" content="2021-06-23T09:59:10.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luojianwei.top/.top//envsetup.jpg">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/06/16/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%BA%8C-%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;16&#x2F;Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%BA%8C-%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;16&#x2F;Android-Q-编译原理之二-编译环境初始化&#x2F;&quot;,&quot;title&quot;:&quot;Android Q 编译原理之二 编译环境初始化&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android Q 编译原理之二 编译环境初始化 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%91%BD%E4%BB%A4%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">初始化命令介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hmm-%E6%9F%A5%E7%9C%8B%E6%94%AF%E6%8C%81%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.</span> <span class="nav-text">hmm 查看支持接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#validate-current-shell"><span class="nav-number">2.2.</span> <span class="nav-text">validate_current_shell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#source-vendorsetup"><span class="nav-number">2.3.</span> <span class="nav-text">source_vendorsetup</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#addcompletions"><span class="nav-number">2.4.</span> <span class="nav-text">addcompletions</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lunch-aosp-arm-eng"><span class="nav-number">3.</span> <span class="nav-text">lunch aosp_arm_eng</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#lunch%E8%AF%B4%E6%98%8E"><span class="nav-number">3.1.</span> <span class="nav-text">lunch说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#lunch"><span class="nav-number">3.2.</span> <span class="nav-text">lunch()</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#build-build-var-cache"><span class="nav-number">3.2.1.</span> <span class="nav-text">build_build_var_cache()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#config-mk"><span class="nav-number">4.</span> <span class="nav-text">config.mk</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#build-make-core-envsetup-mk"><span class="nav-number">4.1.</span> <span class="nav-text">build&#x2F;make&#x2F;core&#x2F;envsetup.mk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#build-make-core-board-config-mk"><span class="nav-number">4.2.</span> <span class="nav-text">build&#x2F;make&#x2F;core&#x2F;board_config.mk</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/16/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%BA%8C-%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android Q 编译原理之二 编译环境初始化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-16 16:23:55" itemprop="dateCreated datePublished" datetime="2021-06-16T16:23:55+08:00">2021-06-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-23 17:59:10" itemprop="dateModified" datetime="2021-06-23T17:59:10+08:00">2021-06-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Compiler/" itemprop="url" rel="index"><span itemprop="name">Compiler</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p style="text-indent:2em">上一节针对Android编译系统做了一个笼统的说明，这一节针对编译环境初始化做一下详细的展示。</p>
+
+<h3 id="初始化命令介绍"><a href="#初始化命令介绍" class="headerlink" title="初始化命令介绍"></a>初始化命令介绍</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 初始化命令：</span></span><br><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">envsetup.sh 构建代码：</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">...						<span class="comment"># 1</span></span><br><span class="line">validate_current_shell      <span class="comment"># 2</span></span><br><span class="line">source_vendorsetup          <span class="comment"># 3 </span></span><br><span class="line">addcompletions              <span class="comment"># 4</span></span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">envsetup.sh主要做了下面几个事情：</p>
+
+<p><img src="/.top//envsetup.jpg" alt="envsetup"></p>
+<h4 id="hmm-查看支持接口"><a href="#hmm-查看支持接口" class="headerlink" title="hmm 查看支持接口"></a>hmm 查看支持接口</h4><p style="text-indent:2em"> 输入hmm可以看到envsetup支持的一些接口：</p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>lunch</td>
+<td>lunch <product_name>-<build_variant><br>选择<product_name>作为要构建的产品，<build_variant>作为要构建的变体，并将这些选择存储在环境中，以便后续调用“m”等读取。</build_variant></product_name></build_variant></product_name></td>
+</tr>
+<tr>
+<td>tapas</td>
+<td>交互方式：tapas [&amp;ltApp1&amp;gt &amp;ltApp2&amp;gt …] [arm|x86|mips|arm64|x86_64|mips64] [eng|userdebug|user]<br>设置构建解绑定应用程序(APKs)的构建环境。</td>
+</tr>
+<tr>
+<td>banchan</td>
+<td>交互方式：banchan &amp;ltmodule1&amp;gt [&amp;ltmodule2&amp;gt …] [arm|x86|arm64|x86_64] [eng|userdebug|user]</td>
+</tr>
+<tr>
+<td>croot</td>
+<td>将目录更改到树的顶部或其子目录。</td>
+</tr>
+<tr>
+<td>m</td>
+<td>编译整个源码，可以不用切换到根目录</td>
+</tr>
+<tr>
+<td>mm</td>
+<td>编译当前目录下的源码，不包含他们的依赖模块</td>
+</tr>
+<tr>
+<td>mmm</td>
+<td>编译指定目录下的所有模块，不包含他们的依赖模块.例如：<br>mmm dir/:target1,target2.</td>
+</tr>
+<tr>
+<td>mma</td>
+<td>编译当前目录下的源码，包含他们的依赖模块</td>
+</tr>
+<tr>
+<td>mmma</td>
+<td>编译指定目录下的所模块，包含他们的依赖模块</td>
+</tr>
+<tr>
+<td>provision</td>
+<td>具有所有必需分区的闪存设备。选项将传递给fastboot。</td>
+</tr>
+<tr>
+<td>cgrep</td>
+<td>对系统本地所有的C/C++文件执行grep命令</td>
+</tr>
+<tr>
+<td>ggrep</td>
+<td>对系统本地所有的Gradle文件执行grep命令</td>
+</tr>
+<tr>
+<td>gogrep</td>
+<td>对系统本地所有的Go文件执行grep命令</td>
+</tr>
+<tr>
+<td>jgrep</td>
+<td>对系统本地所有的Java文件执行grep命令</td>
+</tr>
+<tr>
+<td>ktgrep</td>
+<td>对系统本地所有的Kotlin文件执行grep命令</td>
+</tr>
+<tr>
+<td>resgrep</td>
+<td>对系统本地所有的res目录下的xml文件执行grep命令</td>
+</tr>
+<tr>
+<td>mangrep</td>
+<td>对系统本地所有的AndroidManifest.xml文件执行grep命令</td>
+</tr>
+<tr>
+<td>mgrep</td>
+<td>对系统本地所有的Makefiles文件和*.bp文件执行grep命令</td>
+</tr>
+<tr>
+<td>owngrep</td>
+<td>对系统本地所有的OWNERS文件执行grep命令</td>
+</tr>
+<tr>
+<td>rsgrep</td>
+<td>对系统本地所有的source文件执行grep命令</td>
+</tr>
+<tr>
+<td>sepgrep</td>
+<td>对系统本地所有的Rust文件执行grep命令</td>
+</tr>
+<tr>
+<td>sgrep</td>
+<td>对系统本地所有的source文件执行grep命令</td>
+</tr>
+<tr>
+<td>godir</td>
+<td>根据godir后的参数文件名在整个目录下查找，并且切换目录</td>
+</tr>
+<tr>
+<td>allmod</td>
+<td>列出所有模块</td>
+</tr>
+<tr>
+<td>gomod</td>
+<td>转到包含模块的目录</td>
+</tr>
+<tr>
+<td>pathmod</td>
+<td>获取包含模块的目录</td>
+</tr>
+<tr>
+<td>outmod</td>
+<td>获取具有特定扩展名的模块的已安装输出的位置。</td>
+</tr>
+<tr>
+<td>dirmods</td>
+<td>获取在给定目录中定义的模块。</td>
+</tr>
+<tr>
+<td>installmod</td>
+<td>Adb安装模块构建的APK。</td>
+</tr>
+<tr>
+<td>refreshmod</td>
+<td>刷新allmod/gomod/pathmod/outmod/installmod的模块列表</td>
+</tr>
+<tr>
+<td>syswrite</td>
+<td>将分区(例如system.img)重新挂载为可写分区，必要时重新启动。</td>
+</tr>
+</tbody></table>
+<h4 id="validate-current-shell"><a href="#validate-current-shell" class="headerlink" title="validate_current_shell"></a>validate_current_shell</h4><p style="text-indent:2em"> 确定当前的shell环境，建立shell命令</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">validate_current_shell</span></span>() &#123;</span><br><span class="line">    <span class="built_in">local</span> current_sh=<span class="string">&quot;<span class="subst">$(ps -o command -p $$)</span>&quot;</span></span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;<span class="variable">$current_sh</span>&quot;</span> <span class="keyword">in</span></span><br><span class="line">        *bash*)</span><br><span class="line">            <span class="keyword">function</span> <span class="function"><span class="title">check_type</span></span>() &#123; <span class="built_in">type</span> -t <span class="string">&quot;<span class="variable">$1</span>&quot;</span>; &#125;</span><br><span class="line">            ;;</span><br><span class="line">        *zsh*)</span><br><span class="line">            <span class="keyword">function</span> <span class="function"><span class="title">check_type</span></span>() &#123; <span class="built_in">type</span> <span class="string">&quot;<span class="variable">$1</span>&quot;</span>; &#125;</span><br><span class="line">            enable_zsh_completion ;;</span><br><span class="line">        *)</span><br><span class="line">            <span class="built_in">echo</span> -e <span class="string">&quot;WARNING: Only bash and zsh are supported.\nUse of other shell would lead to erroneous results.&quot;</span></span><br><span class="line">            ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="source-vendorsetup"><a href="#source-vendorsetup" class="headerlink" title="source_vendorsetup"></a>source_vendorsetup</h4><p style="text-indent:2em"> 从device\vendor\product等目录遍历搜索vendorsetup.sh,并source进来</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Execute the contents of any vendorsetup.sh files we can find.</span></span><br><span class="line"><span class="comment"># Unless we find an allowed-vendorsetup_sh-files file, in which case we&#x27;ll only</span></span><br><span class="line"><span class="comment"># load those.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># This allows loading only approved vendorsetup.sh files</span></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">source_vendorsetup</span></span>() &#123;</span><br><span class="line">    <span class="built_in">unset</span> VENDOR_PYTHONPATH</span><br><span class="line">    <span class="built_in">local</span> T=<span class="string">&quot;<span class="subst">$(gettop)</span>&quot;</span></span><br><span class="line">    allowed=</span><br><span class="line">    <span class="keyword">for</span> f <span class="keyword">in</span> $(<span class="built_in">cd</span> <span class="string">&quot;<span class="variable">$T</span>&quot;</span> &amp;&amp; find -L device vendor product -maxdepth 4 -name <span class="string">&#x27;allowed-vendorsetup_sh-files&#x27;</span> 2&gt;/dev/null | sort); <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$allowed</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;More than one &#x27;allowed_vendorsetup_sh-files&#x27; file found, not including any vendorsetup.sh files:&quot;</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;  <span class="variable">$allowed</span>&quot;</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;  <span class="variable">$f</span>&quot;</span></span><br><span class="line">            <span class="built_in">return</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">        allowed=<span class="string">&quot;<span class="variable">$T</span>/<span class="variable">$f</span>&quot;</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">    allowed_files=</span><br><span class="line">    [ -n <span class="string">&quot;<span class="variable">$allowed</span>&quot;</span> ] &amp;&amp; allowed_files=$(cat <span class="string">&quot;<span class="variable">$allowed</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> dir <span class="keyword">in</span> device vendor product; <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> $(<span class="built_in">cd</span> <span class="string">&quot;<span class="variable">$T</span>&quot;</span> &amp;&amp; <span class="built_in">test</span> -d <span class="variable">$dir</span> &amp;&amp; \</span><br><span class="line">            find -L <span class="variable">$dir</span> -maxdepth 4 -name <span class="string">&#x27;vendorsetup.sh&#x27;</span> 2&gt;/dev/null | sort); <span class="keyword">do</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">$allowed</span>&quot;</span> || <span class="string">&quot;<span class="variable">$allowed_files</span>&quot;</span> =~ <span class="variable">$f</span> ]]; <span class="keyword">then</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;including <span class="variable">$f</span>&quot;</span>; . <span class="string">&quot;<span class="variable">$T</span>/<span class="variable">$f</span>&quot;</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;ignoring <span class="variable">$f</span>, not in <span class="variable">$allowed</span>&quot;</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        <span class="keyword">done</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 例：</span></span><br><span class="line"><span class="comment"># 	1.建立一个目录：/vendor/luojianwei/build</span></span><br><span class="line"><span class="comment"># 	2.创建一个vendorsetup.sh</span></span><br><span class="line"><span class="comment">#   	写一个log: echo &quot;vendor build test.&quot;</span></span><br><span class="line"><span class="comment"># 	3.执行source build/envsetup.sh</span></span><br><span class="line">. build/envsetup.sh</span><br><span class="line"><span class="comment"># source后打印：</span></span><br><span class="line"><span class="comment"># including vendor/luojianwei/build/vendorsetup.sh</span></span><br><span class="line"><span class="comment"># vendor build test.</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="addcompletions"><a href="#addcompletions" class="headerlink" title="addcompletions"></a>addcompletions</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">addcompletions</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">local</span> f=</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Keep us from trying to run in something that&#x27;s neither bash nor zsh.</span></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$BASH_VERSION</span>&quot;</span> -a -z <span class="string">&quot;<span class="variable">$ZSH_VERSION</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Keep us from trying to run in bash that&#x27;s too old.</span></span><br><span class="line">    <span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$BASH_VERSION</span>&quot;</span> -a <span class="variable">$&#123;BASH_VERSINFO[0]&#125;</span> -lt 3 ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">local</span> completion_files=(</span><br><span class="line">      system/core/adb/adb.bash</span><br><span class="line">      system/core/fastboot/fastboot.bash</span><br><span class="line">      tools/asuite/asuite.sh</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Completion can be disabled selectively to allow users to use non-standard completion.</span></span><br><span class="line">    <span class="comment"># e.g.</span></span><br><span class="line">    <span class="comment"># ENVSETUP_NO_COMPLETION=adb # -&gt; disable adb completion</span></span><br><span class="line">    <span class="comment"># ENVSETUP_NO_COMPLETION=adb:bit # -&gt; disable adb and bit completion</span></span><br><span class="line">    <span class="keyword">for</span> f <span class="keyword">in</span> <span class="variable">$&#123;completion_files[*]&#125;</span>; <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$f</span>&quot;</span> ] &amp;&amp; should_add_completion <span class="string">&quot;<span class="variable">$f</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">            . <span class="variable">$f</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> should_add_completion bit ; <span class="keyword">then</span></span><br><span class="line">        complete -C <span class="string">&quot;bit --tab&quot;</span> bit</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$ZSH_VERSION</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="comment"># Doesn&#x27;t work in zsh.</span></span><br><span class="line">        complete -o nospace -F _croot croot</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    complete -F _lunch lunch</span><br><span class="line"></span><br><span class="line">    complete -F _complete_android_module_names pathmod</span><br><span class="line">    complete -F _complete_android_module_names gomod</span><br><span class="line">    complete -F _complete_android_module_names outmod</span><br><span class="line">    complete -F _complete_android_module_names installmod</span><br><span class="line">    complete -F _complete_android_module_names m</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="lunch-aosp-arm-eng"><a href="#lunch-aosp-arm-eng" class="headerlink" title="lunch aosp_arm_eng"></a>lunch aosp_arm_eng</h3><h4 id="lunch说明"><a href="#lunch说明" class="headerlink" title="lunch说明"></a>lunch说明</h4><p style="text-indent:2em"> 环境变量初始化完成后，我们需要选择一个编译目标。lunch 主要作用是根据用户输入或者选择的产品名来设置与具体产品相关的环境变量。如果你不知道想要编译的目标是什么，直接执行一个lunch命令，会列出所有的目标，直接回车，会默认使用aosp_arm-eng这个目标。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">You<span class="string">&#x27;re building on Linux</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Lunch menu... pick a combo:</span></span><br><span class="line"><span class="string">     1. aosp_arm-eng</span></span><br><span class="line"><span class="string">     2. aosp_arm64-eng</span></span><br><span class="line"><span class="string">     3. aosp_blueline-userdebug</span></span><br><span class="line"><span class="string">     4. aosp_blueline_car-userdebug</span></span><br><span class="line"><span class="string">     5. aosp_bonito-userdebug</span></span><br><span class="line"><span class="string">     6. aosp_bonito_car-userdebug</span></span><br><span class="line"><span class="string">     7. aosp_bramble-userdebug</span></span><br><span class="line"><span class="string">     8. aosp_car_arm-userdebug</span></span><br><span class="line"><span class="string">     9. aosp_car_arm64-userdebug</span></span><br><span class="line"><span class="string">     10. aosp_car_x86-userdebug</span></span><br><span class="line"><span class="string">     11. aosp_car_x86_64-userdebug</span></span><br><span class="line"><span class="string">     12. aosp_cf_arm64_auto-userdebug</span></span><br><span class="line"><span class="string">     13. aosp_cf_arm64_phone-userdebug</span></span><br><span class="line"><span class="string">     14. aosp_cf_x86_64_pc-userdebug</span></span><br><span class="line"><span class="string">     15. aosp_cf_x86_64_phone-userdebug</span></span><br><span class="line"><span class="string">     16. aosp_cf_x86_auto-userdebug</span></span><br><span class="line"><span class="string">     17. aosp_cf_x86_phone-userdebug</span></span><br><span class="line"><span class="string">     18. aosp_cf_x86_tv-userdebug</span></span><br><span class="line"><span class="string">     19. aosp_coral-userdebug</span></span><br><span class="line"><span class="string">     20. aosp_coral_car-userdebug</span></span><br><span class="line"><span class="string">     21. aosp_crosshatch-userdebug</span></span><br><span class="line"><span class="string">     22. aosp_crosshatch_car-userdebug</span></span><br><span class="line"><span class="string">     23. aosp_flame-userdebug</span></span><br><span class="line"><span class="string">     24. aosp_flame_car-userdebug</span></span><br><span class="line"><span class="string">     25. aosp_redfin-userdebug</span></span><br><span class="line"><span class="string">     26. aosp_sargo-userdebug</span></span><br><span class="line"><span class="string">     27. aosp_sunfish-userdebug</span></span><br><span class="line"><span class="string">     28. aosp_trout_arm64-userdebug</span></span><br><span class="line"><span class="string">     29. aosp_trout_x86-userdebug</span></span><br><span class="line"><span class="string">     30. aosp_x86-eng</span></span><br><span class="line"><span class="string">     31. aosp_x86_64-eng</span></span><br><span class="line"><span class="string">     32. arm_krait-eng</span></span><br><span class="line"><span class="string">     33. arm_v7_v8-eng</span></span><br><span class="line"><span class="string">     34. armv8-eng</span></span><br><span class="line"><span class="string">     35. armv8_cortex_a55-eng</span></span><br><span class="line"><span class="string">     36. armv8_kryo385-eng</span></span><br><span class="line"><span class="string">     37. beagle_x15-userdebug</span></span><br><span class="line"><span class="string">     38. beagle_x15_auto-userdebug</span></span><br><span class="line"><span class="string">     39. car_x86_64-userdebug</span></span><br><span class="line"><span class="string">     40. db845c-userdebug</span></span><br><span class="line"><span class="string">     41. fuchsia_arm64-eng</span></span><br><span class="line"><span class="string">     42. fuchsia_x86_64-eng</span></span><br><span class="line"><span class="string">     43. hikey-userdebug</span></span><br><span class="line"><span class="string">     44. hikey64_only-userdebug</span></span><br><span class="line"><span class="string">     45. hikey960-userdebug</span></span><br><span class="line"><span class="string">     46. hikey960_tv-userdebug</span></span><br><span class="line"><span class="string">     47. hikey_tv-userdebug</span></span><br><span class="line"><span class="string">     48. pixel3_mainline-userdebug</span></span><br><span class="line"><span class="string">     49. poplar-eng</span></span><br><span class="line"><span class="string">     50. poplar-user</span></span><br><span class="line"><span class="string">     51. poplar-userdebug</span></span><br><span class="line"><span class="string">     52. qemu_trusty_arm64-userdebug</span></span><br><span class="line"><span class="string">     53. silvermont-eng</span></span><br><span class="line"><span class="string">     54. uml-userdebug</span></span><br><span class="line"><span class="string">     55. yukawa-userdebug</span></span><br><span class="line"><span class="string">     56. yukawa_sei510-userdebug</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Which would you like? [aosp_arm-eng]</span></span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"> 执行命令：lunch 1， 可以看到配置的一些环境变量。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">============================================</span><br><span class="line">PLATFORM_VERSION_CODENAME=S</span><br><span class="line">PLATFORM_VERSION=S</span><br><span class="line">TARGET_PRODUCT=aosp_arm</span><br><span class="line">TARGET_BUILD_VARIANT=eng</span><br><span class="line">TARGET_BUILD_TYPE=release</span><br><span class="line">TARGET_ARCH=arm</span><br><span class="line">TARGET_ARCH_VARIANT=armv7-a-neon</span><br><span class="line">TARGET_CPU_VARIANT=generic</span><br><span class="line">HOST_ARCH=x86_64</span><br><span class="line">HOST_2ND_ARCH=x86</span><br><span class="line">HOST_OS=linux</span><br><span class="line">HOST_OS_EXTRA=Linux-4.4.0-186-generic-x86_64-Ubuntu-16.04.7-LTS</span><br><span class="line">HOST_CROSS_OS=windows</span><br><span class="line">HOST_CROSS_ARCH=x86</span><br><span class="line">HOST_CROSS_2ND_ARCH=x86_64</span><br><span class="line">HOST_BUILD_TYPE=release</span><br><span class="line">BUILD_ID=AOSP.MASTER</span><br><span class="line">OUT_DIR=out</span><br><span class="line">PRODUCT_SOONG_NAMESPACES=device/generic/goldfish device/generic/goldfish-opengl hardware/google/camera hardware/google/camera/devices/EmulatedCamera device/generic/goldfish device/generic/goldfish-opengl</span><br><span class="line">============================================</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"> 这些环境变量的含义如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>lunch结果</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PLATFORM_VERSION_CODENAME=S</td>
+<td>表示平台版本的名称</td>
+</tr>
+<tr>
+<td>PLATFORM_VERSION=S</td>
+<td>Android平台的版本号</td>
+</tr>
+<tr>
+<td>TARGET_PRODUCT=aosp_arm</td>
+<td>所编译的产品名称</td>
+</tr>
+<tr>
+<td>TARGET_BUILD_VARIANT=userdebug</td>
+<td>所编译产品的类型</td>
+</tr>
+<tr>
+<td>TARGET_BUILD_TYPE=release</td>
+<td>编译的类型，debug和release</td>
+</tr>
+<tr>
+<td>TARGET_ARCH=arm</td>
+<td>表示编译目标的CPU架构</td>
+</tr>
+<tr>
+<td>ARGET_ARCH_VARIANT=armv7-a-neon</td>
+<td>表示编译目标的CPU架构版本</td>
+</tr>
+<tr>
+<td>TARGET_CPU_VARIANT=generic</td>
+<td>表示编译目标的CPU代号</td>
+</tr>
+<tr>
+<td>HOST_ARCH=x86_64</td>
+<td>表示编译平台的架构</td>
+</tr>
+<tr>
+<td>HOST_2ND_ARCH=x86</td>
+<td></td>
+</tr>
+<tr>
+<td>HOST_OS=linux</td>
+<td>表示编译平台的操作系统</td>
+</tr>
+<tr>
+<td>HOST_OS_EXTRA=Linux-4.4.0-186-generic-x86_64-Ubuntu-16.04.7-LTS</td>
+<td>编译系统之外的额外信息</td>
+</tr>
+<tr>
+<td>HOST_CROSS_OS=windows</td>
+<td></td>
+</tr>
+<tr>
+<td>HOST_CROSS_ARCH=x86</td>
+<td></td>
+</tr>
+<tr>
+<td>HOST_CROSS_2ND_ARCH=x86_64</td>
+<td></td>
+</tr>
+<tr>
+<td>HOST_BUILD_TYPE=release</td>
+<td></td>
+</tr>
+<tr>
+<td>BUILD_ID=AOSP.MASTER</td>
+<td>BUILD_ID会出现在版本信息中，可以利用</td>
+</tr>
+<tr>
+<td>OUT_DIR</td>
+<td></td>
+</tr>
+<tr>
+<td>PRODUCT_SOONG_NAMESPACES</td>
+<td></td>
+</tr>
+</tbody></table>
+<p style="text-indent:2em"> lunch aosp_arm-eng 结束后，后创建一个out文件夹，生成一些中间文件。</p>
+
+<h4 id="lunch"><a href="#lunch" class="headerlink" title="lunch()"></a>lunch()</h4><p style="text-indent:2em"> lunch命令用来设置 TARGET_PRODUCT、TARGET_BUILD_VARIANT、TARGET_PLATFORM_VERSION、TARGET_BUILD_TYPE、TARGET_BUILD_APPS等环境变量。lunch操作流程如下：</p>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1.获取lunch操作的参数，如果参数不为空，参数则为指定要编译的设备型号和编译类型；如果参数为空，会调用print_lunch_menu来显示Lunch菜单项，读取用户的输入，存入answer</span><br><span class="line">2.如果answer为空，即之前在lunch菜单中用户只敲了一个回车。会将默认选项改为aosp_arm-eng，结果存入selection</span><br><span class="line">3.如果lunch操作得到的输入是数字，则将数字转换为LUNCH_MENU_CHOICES中的字符串，结果存入selection</span><br><span class="line">4.解析selection的值，得到 product = aosp_arm 和 variant = eng, 把他们分别保存到 TARGET_PRODUCT 和 TARGET_BUILD_VARIANT 中</span><br><span class="line">5.根据前面的设置，调用build_build_var_cache 来更新编译环境相关变量</span><br><span class="line">6.export 编译选项TARGET_PRODUCT, TARGET_BUILD_VARIANT和TARGET_BUILD_TYPE三元组</span><br><span class="line">7.调用set_stuff_for_environment 来设置其他环境变量，如PROMPT_COMMAND，编译toolchain和tools相关的路径等</span><br><span class="line">8.调用printconfig 来输出当前的设置选项</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">lunch</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">local</span> answer</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="variable">$#</span> -gt 1 ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;usage: lunch [target]&quot;</span> &gt;&amp;2</span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$1</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        answer=<span class="variable">$1</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        print_lunch_menu</span><br><span class="line">        <span class="built_in">echo</span> -n <span class="string">&quot;Which would you like? [aosp_arm-eng] &quot;</span></span><br><span class="line">        <span class="built_in">read</span> answer</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">local</span> selection=</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$answer</span>&quot;</span> ]</span><br><span class="line">    <span class="keyword">then</span></span><br><span class="line">        selection=aosp_arm-eng</span><br><span class="line">    <span class="keyword">elif</span> (<span class="built_in">echo</span> -n <span class="variable">$answer</span> | grep -q -e <span class="string">&quot;^[0-9][0-9]*$&quot;</span>)</span><br><span class="line">    <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">local</span> choices=($(TARGET_BUILD_APPS= get_build_var COMMON_LUNCH_CHOICES))</span><br><span class="line">        <span class="keyword">if</span> [ <span class="variable">$answer</span> -le <span class="variable">$&#123;#choices[@]&#125;</span> ]</span><br><span class="line">        <span class="keyword">then</span></span><br><span class="line">            <span class="comment"># array in zsh starts from 1 instead of 0.</span></span><br><span class="line">            <span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$ZSH_VERSION</span>&quot;</span> ]</span><br><span class="line">            <span class="keyword">then</span></span><br><span class="line">                selection=<span class="variable">$&#123;choices[$(($answer))]&#125;</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                selection=<span class="variable">$&#123;choices[$(($answer-1))]&#125;</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        selection=<span class="variable">$answer</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">export</span> TARGET_BUILD_APPS=</span><br><span class="line"></span><br><span class="line">    <span class="built_in">local</span> product variant_and_version variant version</span><br><span class="line">    product=<span class="variable">$&#123;selection%%-*&#125;</span> <span class="comment"># Trim everything after first dash</span></span><br><span class="line">    variant_and_version=<span class="variable">$&#123;selection#*-&#125;</span> <span class="comment"># Trim everything up to first dash</span></span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$variant_and_version</span>&quot;</span> != <span class="string">&quot;<span class="variable">$selection</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        variant=<span class="variable">$&#123;variant_and_version%%-*&#125;</span></span><br><span class="line">        <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$variant</span>&quot;</span> != <span class="string">&quot;<span class="variable">$variant_and_version</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">            version=<span class="variable">$&#123;variant_and_version#*-&#125;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$product</span>&quot;</span> ]</span><br><span class="line">    <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;Invalid lunch combo: <span class="variable">$selection</span>&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    TARGET_PRODUCT=<span class="variable">$product</span> \</span><br><span class="line">    TARGET_BUILD_VARIANT=<span class="variable">$variant</span> \</span><br><span class="line">    TARGET_PLATFORM_VERSION=<span class="variable">$version</span> \</span><br><span class="line">    build_build_var_cache</span><br><span class="line">    <span class="keyword">if</span> [ $? -ne 0 ]</span><br><span class="line">    <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$product</span>&quot;</span> =~ .*_(eng|user|userdebug) ]]</span><br><span class="line">        <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;Did you mean -<span class="variable">$&#123;product/*_/&#125;</span>? (dash instead of underscore)&quot;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">export</span> TARGET_PRODUCT=$(get_build_var TARGET_PRODUCT)</span><br><span class="line">    <span class="built_in">export</span> TARGET_BUILD_VARIANT=$(get_build_var TARGET_BUILD_VARIANT)</span><br><span class="line">    <span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$version</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">      <span class="built_in">export</span> TARGET_PLATFORM_VERSION=$(get_build_var TARGET_PLATFORM_VERSION)</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      <span class="built_in">unset</span> TARGET_PLATFORM_VERSION</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">export</span> TARGET_BUILD_TYPE=release</span><br><span class="line"></span><br><span class="line">    [[ -n <span class="string">&quot;<span class="variable">$&#123;ANDROID_QUIET_BUILD:-&#125;</span>&quot;</span> ]] || <span class="built_in">echo</span></span><br><span class="line"></span><br><span class="line">    set_stuff_for_environment</span><br><span class="line">    [[ -n <span class="string">&quot;<span class="variable">$&#123;ANDROID_QUIET_BUILD:-&#125;</span>&quot;</span> ]] || printconfig</span><br><span class="line">    destroy_build_var_cache</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="build-build-var-cache"><a href="#build-build-var-cache" class="headerlink" title="build_build_var_cache()"></a>build_build_var_cache()</h5><p style="text-indent:2em"> 根据前面的设置，更新编译环境相关变量。主要通过执行 "build/soong/soong_ui.bash --dumpvars-mode" 完成，最终执行的是 "./out/soog_ui  --dumpvars-mode"。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Get all the build variables needed by this script in a single call to the build system.</span></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">build_build_var_cache</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">local</span> T=$(gettop)</span><br><span class="line">    <span class="comment"># Grep out the variable names from the script.</span></span><br><span class="line">    cached_vars=(`cat <span class="variable">$T</span>/build/envsetup.sh | tr <span class="string">&#x27;()&#x27;</span> <span class="string">&#x27;  &#x27;</span> | awk <span class="string">&#x27;&#123;for(i=1;i&lt;=NF;i++) if($i~/get_build_var/) print $(i+1)&#125;&#x27;</span> | sort -u | tr <span class="string">&#x27;\n&#x27;</span> <span class="string">&#x27; &#x27;</span>`)</span><br><span class="line">    cached_abs_vars=(`cat <span class="variable">$T</span>/build/envsetup.sh | tr <span class="string">&#x27;()&#x27;</span> <span class="string">&#x27;  &#x27;</span> | awk <span class="string">&#x27;&#123;for(i=1;i&lt;=NF;i++) if($i~/get_abs_build_var/) print $(i+1)&#125;&#x27;</span> | sort -u | tr <span class="string">&#x27;\n&#x27;</span> <span class="string">&#x27; &#x27;</span>`)</span><br><span class="line">    <span class="comment"># Call the build system to dump the &quot;&lt;val&gt;=&lt;value&gt;&quot; pairs as a shell script.</span></span><br><span class="line">    build_dicts_script=`\<span class="built_in">builtin</span> <span class="built_in">cd</span> <span class="variable">$T</span>; build/soong/soong_ui.bash --dumpvars-mode \</span><br><span class="line">                        --vars=<span class="string">&quot;<span class="variable">$&#123;cached_vars[*]&#125;</span>&quot;</span> \</span><br><span class="line">                        --abs-vars=<span class="string">&quot;<span class="variable">$&#123;cached_abs_vars[*]&#125;</span>&quot;</span> \</span><br><span class="line">                        --var-prefix=var_cache_ \</span><br><span class="line">                        --abs-var-prefix=abs_var_cache_`</span><br><span class="line">    <span class="built_in">local</span> ret=$?</span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$ret</span> -ne 0 ]</span><br><span class="line">    <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">unset</span> build_dicts_script</span><br><span class="line">        <span class="built_in">return</span> <span class="variable">$ret</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="comment"># Execute the script to store the &quot;&lt;val&gt;=&lt;value&gt;&quot; pairs as shell variables.</span></span><br><span class="line">    <span class="built_in">eval</span> <span class="string">&quot;<span class="variable">$build_dicts_script</span>&quot;</span></span><br><span class="line">    ret=$?</span><br><span class="line">    <span class="built_in">unset</span> build_dicts_script</span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$ret</span> -ne 0 ]</span><br><span class="line">    <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span> <span class="variable">$ret</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    BUILD_VAR_CACHE_READY=<span class="string">&quot;true&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"> soong_ui 由build/soong/cmd/soong_ui/main.go编译生成:</p>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[build/soong/cmd/soong_ui/main.<span class="keyword">go</span>]</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">...</span><br><span class="line">    <span class="keyword">if</span> os.Args[<span class="number">1</span>] == <span class="string">&quot;--dumpvar-mode&quot;</span> &#123;</span><br><span class="line">        dumpVar(buildCtx, config, os.Args[<span class="number">2</span>:])</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> os.Args[<span class="number">1</span>] == <span class="string">&quot;--dumpvars-mode&quot;</span> &#123;</span><br><span class="line">        dumpVars(buildCtx, config, os.Args[<span class="number">2</span>:])</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line">[build/soong/cmd/soong_ui/main.<span class="keyword">go</span>]</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dumpVars</span><span class="params">(ctx build.Context, config build.Config, args []<span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">       varData, err := build.DumpMakeVars(ctx, config, <span class="literal">nil</span>, allVars)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"> 最后调用到了ckati执行-f build/make/core/config.mk</p>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">[/build/soong/ui/build/dumpvars.<span class="keyword">go</span>]</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">dumpMakeVars</span><span class="params">(ctx Context, config Config, goals, vars []<span class="keyword">string</span>, write_soong_vars <span class="keyword">bool</span>)</span> <span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    ctx.BeginTrace(metrics.RunKati, <span class="string">&quot;dumpvars&quot;</span>)</span><br><span class="line">    <span class="keyword">defer</span> ctx.EndTrace()</span><br><span class="line"> </span><br><span class="line">    cmd := Command(ctx, config, <span class="string">&quot;dumpvars&quot;</span>,</span><br><span class="line">        config.PrebuiltBuildTool(<span class="string">&quot;ckati&quot;</span>),</span><br><span class="line">        <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;build/make/core/config.mk&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--color_warnings&quot;</span>,</span><br><span class="line">        <span class="string">&quot;--kati_stats&quot;</span>,</span><br><span class="line">        <span class="string">&quot;dump-many-vars&quot;</span>,</span><br><span class="line">        <span class="string">&quot;MAKECMDGOALS=&quot;</span>+strings.Join(goals, <span class="string">&quot; &quot;</span>))</span><br><span class="line">    cmd.Environment.Set(<span class="string">&quot;CALLED_FROM_SETUP&quot;</span>, <span class="string">&quot;true&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> write_soong_vars &#123;</span><br><span class="line">        cmd.Environment.Set(<span class="string">&quot;WRITE_SOONG_VARIABLES&quot;</span>, <span class="string">&quot;true&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    cmd.Environment.Set(<span class="string">&quot;DUMP_MANY_VARS&quot;</span>, strings.Join(vars, <span class="string">&quot; &quot;</span>))</span><br><span class="line">    cmd.Sandbox = dumpvarsSandbox</span><br><span class="line">    output := bytes.Buffer&#123;&#125;</span><br><span class="line">    cmd.Stdout = &amp;output</span><br><span class="line">    pipe, err := cmd.StderrPipe()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        ctx.Fatalln(<span class="string">&quot;Error getting output pipe for ckati:&quot;</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    cmd.StartOrFatal()</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> error out when Stderr contains any content</span></span><br><span class="line">    status.KatiReader(ctx.Status.StartTool(), pipe)</span><br><span class="line">    cmd.WaitOrFatal()</span><br><span class="line"> </span><br><span class="line">    ret := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>, <span class="built_in">len</span>(vars))</span><br><span class="line">    ...</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> ret, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"> 下面我们单独研究一下config.mk。</p>
+
+<h3 id="config-mk"><a href="#config-mk" class="headerlink" title="config.mk"></a>config.mk</h3><p><img src="/.top//config.jpg" alt="img"></p>
+<p style="text-indent:2em"> 说明：config.mk首先加载了build/make/common 中的core.mk、math.mk、strings.mk、json.mk 用来配置一些shell环境、math函数、string和json的一些支持函数。最主要的操作还是加载build/make/core中的envsetup.mk和dumpvar.mk</p>
+
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">#配置两个目录的变量，供之后的mk使用</span></span><br><span class="line">BUILD_SYSTEM :=$= build/make/core</span><br><span class="line">BUILD_SYSTEM_COMMON :=$= build/make/common</span><br><span class="line"> </span><br><span class="line"><span class="comment">#加载core.mk， 只使用ANDROID_BUILD_SHELL来包装bash。</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM_COMMON)</span>/core.mk</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">#设置make中使用的有效数学函数。</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM_COMMON)</span>/math.mk</span><br><span class="line"> </span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM_COMMON)</span>/strings.mk</span><br><span class="line"> </span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM_COMMON)</span>/json.mk</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 避免硬件解码路径被覆盖的调用pathmap.mk建立硬解映射</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/pathmap.mk</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 允许项目定义自己的全局可用变量</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/project_definitions.mk</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment"># ###############################################################</span></span><br><span class="line"><span class="comment"># Build system internal files</span></span><br><span class="line"><span class="comment"># ###############################################################</span></span><br><span class="line"><span class="comment"># 构建系统内部文件(写Android.mk时会调用include头文件，也就是这些makefile文件)</span></span><br><span class="line"> </span><br><span class="line">BUILD_COMBOS:= <span class="variable">$(BUILD_SYSTEM)</span>/combo</span><br><span class="line"> </span><br><span class="line">CLEAR_VARS:= <span class="variable">$(BUILD_SYSTEM)</span>/clear_vars.mk</span><br><span class="line"></span><br><span class="line">BUILD_HOST_STATIC_LIBRARY:= <span class="variable">$(BUILD_SYSTEM)</span>/host_static_library.mk</span><br><span class="line">BUILD_HOST_SHARED_LIBRARY:= <span class="variable">$(BUILD_SYSTEM)</span>/host_shared_library.mk</span><br><span class="line">BUILD_STATIC_LIBRARY:= <span class="variable">$(BUILD_SYSTEM)</span>/static_library.mk</span><br><span class="line"> </span><br><span class="line">...</span><br><span class="line"> </span><br><span class="line">BUILD_NOTICE_FILE := <span class="variable">$(BUILD_SYSTEM)</span>/notice_files.mk</span><br><span class="line">BUILD_HOST_DALVIK_JAVA_LIBRARY := <span class="variable">$(BUILD_SYSTEM)</span>/host_dalvik_java_library.mk</span><br><span class="line">BUILD_HOST_DALVIK_STATIC_JAVA_LIBRARY := <span class="variable">$(BUILD_SYSTEM)</span>/host_dalvik_static_java_library.mk</span><br><span class="line"> </span><br><span class="line">BUILD_HOST_TEST_CONFIG := <span class="variable">$(BUILD_SYSTEM)</span>/host_test_config.mk</span><br><span class="line">BUILD_TARGET_TEST_CONFIG := <span class="variable">$(BUILD_SYSTEM)</span>/target_test_config.mk</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">#定义大多数全局变量。这些是特定于用户的构建配置的。</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/envsetup.mk</span><br><span class="line"> </span><br><span class="line"><span class="comment">#构建系统为在哪里找到内核公开了几个变量</span></span><br><span class="line"><span class="comment">#(1)TARGET_DEVICE_KERNEL_HEADERS是为当前正在构建的设备自动创建的。</span></span><br><span class="line"><span class="comment">#它被设置为$(TARGET_DEVICE_DIR)/kernel-headers，</span></span><br><span class="line"><span class="comment">#例如DEVICE/samsung/tuna/kernel-headers。此目录不是由任何人显式设置的，生成系统总是添加此子目录。</span></span><br><span class="line">TARGET_DEVICE_KERNEL_HEADERS := <span class="variable">$(<span class="built_in">strip</span> $(<span class="built_in">wildcard</span> <span class="variable">$(TARGET_DEVICE_DIR)</span>/kernel-headers)</span>)</span><br><span class="line"> </span><br><span class="line"><span class="comment">#(2)TARGET_BOARD_KERNEL_HEADERS由BoardConfig.mk允许包含其他目录的文件。</span></span><br><span class="line"><span class="comment">#如果有一些常见的地方为一组设备保留了一些报头，那么这很有用。</span></span><br><span class="line"><span class="comment">#例如，device/&lt;vendor&gt;/common/kernel头可以包含一些&lt;vendor&gt;设备的头。</span></span><br><span class="line">TARGET_BOARD_KERNEL_HEADERS := <span class="variable">$(<span class="built_in">strip</span> $(<span class="built_in">wildcard</span> <span class="variable">$(TARGET_BOARD_KERNEL_HEADERS)</span>)</span>)</span><br><span class="line">TARGET_BOARD_KERNEL_HEADERS := <span class="variable">$(<span class="built_in">patsubst</span> %/,%,<span class="variable">$(TARGET_BOARD_KERNEL_HEADERS)</span>)</span></span><br><span class="line"><span class="variable">$(<span class="built_in">call</span> validate-kernel-headers,<span class="variable">$(TARGET_BOARD_KERNEL_HEADERS)</span>)</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#(3)TARGET_PRODUCT_KERNEL_头由产品继承图生成。</span></span><br><span class="line"><span class="comment">#这允许体系结构产品为使用该体系结构的设备提供报头。</span></span><br><span class="line">TARGET_PRODUCT_KERNEL_HEADERS := <span class="variable">$(<span class="built_in">strip</span> $(<span class="built_in">wildcard</span> <span class="variable">$(PRODUCT_VENDOR_KERNEL_HEADERS)</span>)</span>)</span><br><span class="line">TARGET_PRODUCT_KERNEL_HEADERS := <span class="variable">$(<span class="built_in">patsubst</span> %/,%,<span class="variable">$(TARGET_PRODUCT_KERNEL_HEADERS)</span>)</span></span><br><span class="line"><span class="variable">$(<span class="built_in">call</span> validate-kernel-headers,<span class="variable">$(TARGET_PRODUCT_KERNEL_HEADERS)</span>)</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment"># 选择一个Java编译器</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/combo/javac.mk</span><br><span class="line"> </span><br><span class="line"><span class="comment"># A list of SEPolicy versions, besides PLATFORM_SEPOLICY_VERSION, that the framework supports.</span></span><br><span class="line"><span class="comment">#框架支持的SEPolicy版本列表，除了PLATFORM_SEPOLICY_VERSION</span></span><br><span class="line">PLATFORM_SEPOLICY_COMPAT_VERSIONS := \</span><br><span class="line">    26.0 \</span><br><span class="line">    27.0 \</span><br><span class="line">    28.0 \</span><br><span class="line">    29.0 \</span><br><span class="line">    30.0 \</span><br><span class="line"> </span><br><span class="line"><span class="keyword">ifeq</span> (<span class="variable">$(CALLED_FROM_SETUP)</span>,true)</span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/ninja_config.mk</span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/soong_config.mk</span><br><span class="line"><span class="keyword">endif</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#加载dumpvar.mk,用来生成make目标</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/dumpvar.mk</span><br></pre></td></tr></table></figure>
+
+<h4 id="build-make-core-envsetup-mk"><a href="#build-make-core-envsetup-mk" class="headerlink" title="build/make/core/envsetup.mk"></a>build/make/core/envsetup.mk</h4><p style="text-indent:2em"> envsetup.mk 主要加载了product_config.mk和board_config.mk，用来得到TARGET_DEVICE和其他变量。</p>
+
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">#设置host和target编译链相关的变量</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/combo/select.mk</span><br><span class="line"><span class="comment">#(1)阅读产品规格，这样我们就可以得到TARGET_DEVICE和其他变量，我们需要找到输出文件</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/product_config.mk</span><br><span class="line"> </span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_SYSTEM)</span>/board_config.mk</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h4 id="build-make-core-board-config-mk"><a href="#build-make-core-board-config-mk" class="headerlink" title="build/make/core/board_config.mk"></a>build/make/core/board_config.mk</h4><p style="text-indent:2em"> 板级可以在$(SRC_TARGET_DIR)/board/$(TARGET_DEVICE)下定义，也可以在vendor/*/$(TARGET_DEVICE)下定义。在这两个地方搜索，但要确保只存在一个。真正的板级应始终与OEM vendor相关联。</p>
+
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment"># Boards may be defined under $(SRC_TARGET_DIR)/board/$(TARGET_DEVICE)</span></span><br><span class="line"><span class="comment"># or under vendor/*/$(TARGET_DEVICE).  Search in both places, but</span></span><br><span class="line"><span class="comment"># make sure only one exists.</span></span><br><span class="line"><span class="comment"># Real boards should always be associated with an OEM vendor.</span></span><br><span class="line"><span class="keyword">ifdef</span> TARGET_DEVICE_DIR</span><br><span class="line">  <span class="keyword">ifneq</span> (<span class="variable">$(<span class="built_in">origin</span> TARGET_DEVICE_DIR)</span>,command line)</span><br><span class="line">    <span class="variable">$(<span class="built_in">error</span> TARGET_DEVICE_DIR may not be set manually)</span></span><br><span class="line">  <span class="keyword">endif</span></span><br><span class="line">  board_config_mk := <span class="variable">$(TARGET_DEVICE_DIR)</span>/BoardConfig.mk</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  board_config_mk := \</span><br><span class="line">    <span class="variable">$(<span class="built_in">strip</span> $(<span class="built_in">sort</span> $(<span class="built_in">wildcard</span> \</span></span><br><span class="line"><span class="variable">      <span class="variable">$(SRC_TARGET_DIR)</span>/board/<span class="variable">$(TARGET_DEVICE)</span>/BoardConfig.mk \</span></span><br><span class="line"><span class="variable">      $(<span class="built_in">shell</span> test -d device &amp;&amp; find -L device -maxdepth 4 -path &#x27;*/<span class="variable">$(TARGET_DEVICE)</span>/BoardConfig.mk&#x27;)</span> \</span><br><span class="line">      <span class="variable">$(<span class="built_in">shell</span> test -d vendor &amp;&amp; find -L vendor -maxdepth 4 -path &#x27;*/<span class="variable">$(TARGET_DEVICE)</span>/BoardConfig.mk&#x27;)</span> \</span><br><span class="line">    )))</span><br><span class="line">  <span class="keyword">ifeq</span> (<span class="variable">$(board_config_mk)</span>,)</span><br><span class="line">    <span class="variable">$(<span class="built_in">error</span> No config <span class="built_in">file</span> found for TARGET_DEVICE <span class="variable">$(TARGET_DEVICE)</span>)</span></span><br><span class="line">  <span class="keyword">endif</span></span><br><span class="line">  <span class="keyword">ifneq</span> (<span class="variable">$(words <span class="variable">$(board_config_mk)</span>)</span>,1)</span><br><span class="line">    <span class="variable">$(<span class="built_in">error</span> Multiple board config files for TARGET_DEVICE <span class="variable">$(TARGET_DEVICE)</span>: <span class="variable">$(board_config_mk)</span>)</span></span><br><span class="line">  <span class="keyword">endif</span></span><br><span class="line">  TARGET_DEVICE_DIR := <span class="variable">$(<span class="built_in">patsubst</span> %/,%,$(<span class="built_in">dir</span> <span class="variable">$(board_config_mk)</span>)</span>)</span><br><span class="line">  .KATI_READONLY := TARGET_DEVICE_DIR</span><br><span class="line"><span class="keyword">endif</span></span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(board_config_mk)</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p style="text-indent:2em">至此，envsetup.sh 和lunch()的初始化流程基本上理清了，主要就是加载了环境变量，并选择了编译目标，后面只要执行一下make就能够进行启动编译，下一节让我们一起看看敲下make后到底发生了什么。</p>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80/" rel="prev" title="Android Q 编译原理之零 序言">
+                  <i class="fa fa-chevron-left"></i> Android Q 编译原理之零 序言
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/17/Android-%E6%BA%90%E7%A0%81%E7%AE%A1%E7%90%86%E4%B9%8B%E4%B8%80-AOSP%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD/" rel="next" title="Android 源码管理之一 AOSP镜像下载">
+                  Android 源码管理之一 AOSP镜像下载 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概述在 Android 7.0 发布之前，Android 仅使用 GNU Make 描述和执行其构建规则，模块定义都使用 Android.mk 进行定义，Android.mk 的本质就是 Makefile，Make 构建系统得到了广泛的支持和使用，但随着Android 的工程越来越大，包含的模块越来越多，以 Makefile 组织的项目编译时间越来越长，在 Android 层面变得缓慢、容易出错、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Q 编译原理之一 编译系统入门篇">
+<meta property="og:url" content="https://luojianwei.top/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%80-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E7%AF%87/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="概述在 Android 7.0 发布之前，Android 仅使用 GNU Make 描述和执行其构建规则，模块定义都使用 Android.mk 进行定义，Android.mk 的本质就是 Makefile，Make 构建系统得到了广泛的支持和使用，但随着Android 的工程越来越大，包含的模块越来越多，以 Makefile 组织的项目编译时间越来越长，在 Android 层面变得缓慢、容易出错、">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luojianwei.top/.top//android_build.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//VZRxYQ.png">
+<meta property="og:image" content="https://luojianwei.top/.top//ninja.png">
+<meta property="og:image" content="https://luojianwei.top/.top//20201014202635594.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//Android10.0%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4%E5%A6%82%E4%B8%8B%E5%9B%BE%E6%89%80%E7%A4%BA.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//%E5%8A%A8%E6%80%81%E5%88%86%E5%8C%BA.png">
+<meta property="og:image" content="https://luojianwei.top/.top//super.img.layout.png">
+<meta property="og:image" content="https://luojianwei.top/.top//ota%E5%8D%87%E7%BA%A7%E8%B0%83%E6%95%B4%E5%88%86%E5%8C%BA%E5%A4%A7%E5%B0%8F.png">
+<meta property="article:published_time" content="2021-06-15T09:18:08.000Z">
+<meta property="article:modified_time" content="2021-07-13T10:16:18.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luojianwei.top/.top//android_build.jpg">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%80-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E7%AF%87/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;15&#x2F;Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%80-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E7%AF%87&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;15&#x2F;Android-Q-编译原理之一-编译系统入门篇&#x2F;&quot;,&quot;title&quot;:&quot;Android Q 编译原理之一 编译系统入门篇&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android Q 编译原理之一 编译系统入门篇 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android%E7%BC%96%E8%AF%91%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">Android编译演进过程：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E4%B8%ADMakefile%E3%80%81Android-mk%E3%80%81Ninja%E3%80%81Kati%E3%80%81Soong%E3%80%81Blueprint%E3%80%81Android-bp%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">构建系统中Makefile、Android.mk、Ninja、Kati、Soong、Blueprint、Android.bp概念介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%BA%90%E7%A0%81%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">编译源码的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">5.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">6.</span> <span class="nav-text">编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E6%95%B4%E7%BC%96"><span class="nav-number">6.1.</span> <span class="nav-text">源码整编</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%8E%AF%E5%A2%83"><span class="nav-number">6.1.1.</span> <span class="nav-text">初始化环境</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E7%BC%96%E8%AF%91%E7%9B%AE%E6%A0%87"><span class="nav-number">6.1.2.</span> <span class="nav-text">选择编译目标</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E7%BC%96%E8%AF%91"><span class="nav-number">6.1.3.</span> <span class="nav-text">开始编译</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%A8%A1%E6%8B%9F%E5%99%A8"><span class="nav-number">6.1.4.</span> <span class="nav-text">运行模拟器</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%8D%95%E7%BC%96"><span class="nav-number">6.2.</span> <span class="nav-text">源码单编</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%80-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android Q 编译原理之一 编译系统入门篇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-15 17:18:08" itemprop="dateCreated datePublished" datetime="2021-06-15T17:18:08+08:00">2021-06-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-13 18:16:18" itemprop="dateModified" datetime="2021-07-13T18:16:18+08:00">2021-07-13</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Compiler/" itemprop="url" rel="index"><span itemprop="name">Compiler</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p style="text-indent:2em">在 Android 7.0 发布之前，Android 仅使用 GNU Make 描述和执行其构建规则，模块定义都使用 Android.mk 进行定义，Android.mk 的本质就是 Makefile，Make 构建系统得到了广泛的支持和使用，但随着Android 的工程越来越大，包含的模块越来越多，以 Makefile 组织的项目编译时间越来越长，在 Android 层面变得缓慢、容易出错、无法扩展且难以测试，Soong 构建系统正好提供了 Android build 所需的灵活性。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因此，从 Android 7.0 开始，Google 就先引入了<a target="_blank" rel="noopener" href="https://ninja-build.org" style="text-decoration:none"> ninja 编译系统 </a>来取代之前使用的 make，相对于 Makefile 来说 Ninja 在大的项目管理中速度和并行方面有突出的优势。由于之前的Android.mk 数据实在巨大，不可能把所有的 Android.mk 改写成 ninja 的构建规则，因此 Google 加入了一个 kati 工具，用于将 Android.mk 转换成 ninja 的构建规则文件 buildxxx.ninja，再使用 ninja 来进行构建工作。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编译速度快了一些，但是既然要干，那就干个大的，最终目标要把 make 都取代，于是从 Android 8.0 开始，Google 为了进一步淘汰 Makefile，因此引入了 Android.bp 文件来替换之前的 Android.mk，Android.bp 只是一个纯粹的配置文件，不包括分支、循环语句等控制流程，本质上就是一个 json 配置文件。同时还引入 Soong 这个构建系统，Android.bp 通过 Blueprint+Soong 转换成 ninja 的构建规则文件 build.ninja，再使用 ninja 来进行构建工作。也可以通过 androidmk 将 Android.mk 转换成 Android.bp，但针对没有分支、循环等流程控制的 Android.mk 才有效。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;但之前的模块全部是用 Android.mk 来定义的，Google 不可能一下子把所有模块都修改成 Android.bp，只能逐步替换。Android 10.0 上，mk 和 bp 编译的列表可以从 \out\.module_paths 中的 Android.bp.list、Android.mk.list 中看到，Android10.0 还有400多个 mk 文件没有被替换完，Google 任重道远。</p>
+
+<p><img src="/.top//android_build.jpg" alt="android_build"></p>
+<h3 id="Android编译演进过程："><a href="#Android编译演进过程：" class="headerlink" title="Android编译演进过程："></a>Android编译演进过程：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Android 7.0 之前使用 GNU Make</span><br><span class="line">Android 7.0 引入 ninja 编译框架、kati 转换工具。</span><br><span class="line">Android 8.0 引入 Android.bp 和 soong 构建系统，默认打开 Android.bp</span><br><span class="line">Android 9.0 强制使用 Android.bp</span><br></pre></td></tr></table></figure>
+
+<h3 id="构建系统中Makefile、Android-mk、Ninja、Kati、Soong、Blueprint、Android-bp概念介绍"><a href="#构建系统中Makefile、Android-mk、Ninja、Kati、Soong、Blueprint、Android-bp概念介绍" class="headerlink" title="构建系统中Makefile、Android.mk、Ninja、Kati、Soong、Blueprint、Android.bp概念介绍"></a>构建系统中Makefile、Android.mk、Ninja、Kati、Soong、Blueprint、Android.bp概念介绍</h3><p style="text-indent:2em"><b>Makefile </b>Android 平台的编译系统其实就是用 Makefile 写出来的一个独立项目。它定义了编译的规则，实现了“自动化编译”，不仅把分散在数百个 Git 库中的代码整合起来、统一编译， 而且还把产物分门别类地输出到一个目录，打包成手机 ROM，还可以生成应用开发时所使用的 SDK、NDK 等。因此，采用 Makefile 编写的编译系统，也可以称为 Makefile 编译系统。Makefile 默认文件名为 Makefile 或 makefile，也常用 .make 或 .mk 作为文件后缀。</p>
+
+<p style="text-indent:2em"><b>Android.mk</b> Makefile 编译系统的一部分，定义了一个模块的必要参数，使模块随着平台编译。通俗来讲就是告诉编译系统，以什么样的规则编译你的源代码，并生成对应的目标文件。</p>
+
+<p style="text-indent:2em"><b>Ninja </b>ninja 是一个编译框架，会根据相应的 ninja 格式的配置文件进行编译，但是 ninja 文件一般不会手动修改，而是通过将 Android.bp 文件转换成 ninja 格文件来编译。Ninja 的默认文件名是 build.ninja，其它文件以 .ninja 为后缀。Makefile 与 Ninja 的核心区别在于设计哲学, Makefile 是设计来给开发编写的，而 Ninja 设计出来是给其它程序生成的。如果说 Makefile 是 C 语言，那么 Ninja 就是汇编语言，如果说 Makefile 是一个 DSL，那么 Ninja 就是一种配置文件。二者的相同点都是为了控制编译流程而设计，所以，他们的核心功能都是指定目标，以及目标之间的依赖关系，自动计算执行顺序。执行 Makefile 的程序，默认是 GNU make，也有一些其它的实现，Ninja 的执行程序，就是 ninja 命令。在 Android 项目中，make 需要编译主机上安装，作为环境的一部分，而 ninja命令则是 Android 平台代码自带，位于 prebuilts/build-tools/linux-x86/bin。</p>
+
+<p style="text-indent:2em"><b>Kati </b>kati 是 Google 专为 Android 开发的一个基于 Golang 和 C++ 的工具，主要功能是把 Android 中的 Android.mk 文件转换成 Ninja 文件。Makefile 文件会通过 kati 转换为 Ninja 文件。在 Android 10.0 中代码路径是 build/kati ，编译后的产物是 ckati，位于 prebuilts/build-tools/linux-x86/bin。在 Android 11.0 之后就只保留工具 ckati 了，Kati 代码是开源的，可以把它 clone 下来，简单分析下它的运行原理。在 Android 全编译以后，可以使用 ninja 来编译已经生成的 .ninja文件。执行编译 odex 编译命令。</p>
+
+<p style="text-indent:2em"><b>Blueprint和Soong </b>Blueprint是生成、解析Android.bp的工具，用于解析Android.bp文件翻译成Ninja语法文件，是Soong的一部分。Soong是谷歌用来替代此前的Makefile编译系统的替代品，类似于之前的Makefile编译系统的核心，Soong负责提供Android.bp文件的语义解析，并将之转换为Ninja文件。Soong还会编译生成一个androidmk命令，用于将Android.mk文件转换为Android.bp文件，不过这个转换功能仅限于没有分支、循环等流程控制的Android.mk才有效。Soong是负责Android编译而设计的工具，而Blueprint只是解析文件格式，Soong解析内容的具体含义。Blueprint负责解析Android.bp文件内容，Blueprint类似一个处理相关语法的库文件，Soong则是定义具体如何处理相应的语法以及命令实现。通俗来讲就是Soong借助于Blueprint定义的Android.bp语法，完成Android.bp的解析，最终转换成Ninja文件。Blueprint和Soong都是由Golang写的项目，从Android 7.0，prebuilts/go/目录下新增Golang所需的运行环境，在编译时使用。因为Soong和Blueprint是Google为Android.bp特别定制的工具，所以不要摘出来单独来操作。</p>
+
+<p style="text-indent:2em"><b>Android.bp </b>Android.bp的出现就是为了替换Android.mk文件。bp跟mk文件不同，它是纯粹的配置，没有分支、循环等流程控制，不能做算术逻辑运算。如果需要控制逻辑，那么只能通过Go语言编写。
+编译android源码后，androidmk工具会生成在：out/soong/host/linux-x86/bin目录下，用于Android.mk转换成Android.bp使用。</p>
+
+<p style="text-indent:2em"><b>Android.mk、Ninja、Soong、Blueprint、kati、Android.bp的概念之间的联系为：</b></p>
+
+<p><img src="/.top//VZRxYQ.png" alt="VZRxYQ.png"></p>
+<p style="text-indent:2em">在编译过程中，Android.bp会被收集到out/soong/build.ninja.d，blueprint以此为基础，生成out/soong/build.ninja，Android.mk会由kati/ckati生成为out/build-aosp_arm.ninja，两个ninja文件会被整合进入out/combined-aosp_arm.ninja。</p>
+
+<p><img src="/.top//ninja.png" alt="ninja"></p>
+<p><strong>out/combined-aosp_arm.ninja内容如下所示：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">builddir = out</span><br><span class="line">include out/build-aosp_arm.ninja</span><br><span class="line">include out/soong/build.ninja</span><br><span class="line">build out/combined-aosp_arm.ninja: phony out/soong/build.ninja</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">Android的编译目录在/build 中，看一下Android 10.0源码中的build目录，现在是这个样子：</p>
+
+<p><img src="/.top//20201014202635594.jpg" alt="img"></p>
+<p style="text-indent:2em">这个目录中可以看到core文件夹被link到了make/core，envsetup.sh被link到make/envsetup.sh，这主要是为了对使用者屏蔽切换编译系统的差异。这里重点看四个文件夹：blueprint、kati、make、soong：</p>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">blueprint：用于处理Android.bp，编译生成*.ninja文件，用于做ninja的处理</span><br><span class="line">kati：用于处理Android.mk，编译生成.ninja文件，用于做ninja的处理</span><br><span class="line">soong：构建系统，核心编译为soong_ui.bash</span><br><span class="line">make：文件夹还是原始的make那一套流程，比如envsetup.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="编译源码的方式"><a href="#编译源码的方式" class="headerlink" title="编译源码的方式"></a>编译源码的方式</h3><p style="text-indent:2em">Androd系统源码编译有很多种方式，主要有以下几种：</p>
+
+<ul>
+<li>在Linux中直接进行系统源码编译(Android官方支持)</li>
+<li>在Mac OS中直接进行系统源码编译(Android官方支持)</li>
+<li>使用<a target="_blank" rel="noopener" href="https://www.docker.com/products">Docker</a>编译，支持Mac OS和Windows。</li>
+</ul>
+<p style="text-indent:2em">其中需要注意的是，Docker的最低支持版本为Windows7，建议用Windows10环境下使用Docker，因为在Windows7种还需要借助Docker Toolbox和VirtualBox中的容器进行通信，效率相对低些。</p>
+
+<h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><ol>
+<li>下载依赖包</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils xsltproc unzip m4 libssl-dev libswitch-perl</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Java环境配置</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装 jdk8</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install openjdk-8-jdk</span><br><span class="line"><span class="comment"># 编译源码的时候可能需要切换jdk</span></span><br><span class="line">sudo update-alternatives --config java</span><br><span class="line">sudo update-alternatives --config javac</span><br><span class="line"><span class="comment"># 如果没有将jdk路径添加进系统，需要先添加。</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/java java ~/tools/java/jdk1.6.0_45/bin/java 700</span><br><span class="line">sudo update-alternatives --install /usr/bin/javac javac ~/tools/java/jdk1.6.0_45/bin/javac 700</span><br><span class="line">sudo update-alternatives --install /usr/bin/jar jar ~/tools/java/jdk1.6.0_45/bin/jar 700</span><br><span class="line"><span class="comment"># 这里的700是优先级， ~/tools/java/jdk1.6.0_45/bin是自己安装jdk的目录</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>配置ccache</li>
+</ol>
+<p style="text-indent:2em">ccache是一个编译cache系统，可以加快c/c++代码编译的速度(编译过一次之后)。有ccache的情况下，整个android编译的时间从超过1个小时下降到约半个小时。配置方法见android网站说明：https://source.android.com/source/initializing.html#optimizing-a-build-environment
+    上述配置对kernel代码无效。kernel编译使用ccache请参考下述文章：https://apuroth.gitbooks.io/android-study/content/20160701.html</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编译安卓P、Q启用ccache方法：</span></span><br><span class="line">sudo apt install ccache</span><br><span class="line">vim ~/.bashrc</span><br><span class="line"><span class="built_in">export</span> USE_CCACHE=1</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line">ccache -M 100G</span><br><span class="line"><span class="comment"># 缓存数据默认保持在~/.ccache，上一行指令可以自己设置缓存的最大值。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><h4 id="源码整编"><a href="#源码整编" class="headerlink" title="源码整编"></a>源码整编</h4><p style="text-indent:2em">整编就是编译整个Android源码，整编主要有三个步骤，下面分别就行介绍。
+
+
+</p><p><img src="/.top//Android10.0%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4%E5%A6%82%E4%B8%8B%E5%9B%BE%E6%89%80%E7%A4%BA.jpg" alt="Android10.0编译步骤如下图所示"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh   <span class="comment"># 初始化编译环境</span></span><br><span class="line">lunch aosp_arm-eng         <span class="comment"># 或者 m PRODUCT-aosp_x86_64-eng，Android 10.0不一定需要lunch命令</span></span><br><span class="line">make -j8                   <span class="comment"># 编译模块也可以直接用 m libart</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><h5 id="初始化环境"><a href="#初始化环境" class="headerlink" title="初始化环境"></a>初始化环境</h5></li>
+</ol>
+<p style="text-indent:2em">在AOSP的根目录，输入如下的命令,使用build目录中的envsetup.sh脚本初始化环境，这个脚本会引入其他的执行脚本。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">// 编译前删除build文件夹out</span><br><span class="line">make clobber</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><h5 id="选择编译目标"><a href="#选择编译目标" class="headerlink" title="选择编译目标"></a>选择编译目标</h5></li>
+</ol>
+<p style="text-indent:2em">输入命令：</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lunch</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">lunch命令是envsetup.sh里定义的一个命令，用来让用户选择编译目标。会有以下信息输出：</p>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">You&#x27;re building on Linux</span><br><span class="line"></span><br><span class="line">Lunch menu... pick a combo:</span><br><span class="line">     1. aosp_arm-eng</span><br><span class="line">     2. aosp_arm64-eng</span><br><span class="line">     3. aosp_blueline-userdebug</span><br><span class="line">     4. aosp_blueline_car-userdebug</span><br><span class="line">     5. aosp_bonito-userdebug</span><br><span class="line">     6. aosp_bonito_car-userdebug</span><br><span class="line">     7. aosp_bramble-userdebug</span><br><span class="line">     8. aosp_car_arm-userdebug</span><br><span class="line">     9. aosp_car_arm64-userdebug</span><br><span class="line">     10. aosp_car_x86-userdebug</span><br><span class="line">     11. aosp_car_x86_64-userdebug</span><br><span class="line">     12. aosp_cf_arm64_auto-userdebug</span><br><span class="line">     13. aosp_cf_arm64_phone-userdebug</span><br><span class="line">     14. aosp_cf_x86_64_pc-userdebug</span><br><span class="line">     15. aosp_cf_x86_64_phone-userdebug</span><br><span class="line">     16. aosp_cf_x86_auto-userdebug</span><br><span class="line">     17. aosp_cf_x86_phone-userdebug</span><br><span class="line">     18. aosp_cf_x86_tv-userdebug</span><br><span class="line">     19. aosp_coral-userdebug</span><br><span class="line">     20. aosp_coral_car-userdebug</span><br><span class="line">     21. aosp_crosshatch-userdebug</span><br><span class="line">     22. aosp_crosshatch_car-userdebug</span><br><span class="line">     23. aosp_flame-userdebug</span><br><span class="line">     24. aosp_flame_car-userdebug</span><br><span class="line">     25. aosp_redfin-userdebug</span><br><span class="line">     26. aosp_sargo-userdebug</span><br><span class="line">     27. aosp_sunfish-userdebug</span><br><span class="line">     28. aosp_trout_arm64-userdebug</span><br><span class="line">     29. aosp_trout_x86-userdebug</span><br><span class="line">     30. aosp_x86-eng</span><br><span class="line">     31. aosp_x86_64-eng</span><br><span class="line">     32. arm_krait-eng</span><br><span class="line">     33. arm_v7_v8-eng</span><br><span class="line">     34. armv8-eng</span><br><span class="line">     35. armv8_cortex_a55-eng</span><br><span class="line">     36. armv8_kryo385-eng</span><br><span class="line">     37. beagle_x15-userdebug</span><br><span class="line">     38. beagle_x15_auto-userdebug</span><br><span class="line">     39. car_x86_64-userdebug</span><br><span class="line">     40. db845c-userdebug</span><br><span class="line">     41. fuchsia_arm64-eng</span><br><span class="line">     42. fuchsia_x86_64-eng</span><br><span class="line">     43. hikey-userdebug</span><br><span class="line">     44. hikey64_only-userdebug</span><br><span class="line">     45. hikey960-userdebug</span><br><span class="line">     46. hikey960_tv-userdebug</span><br><span class="line">     47. hikey_tv-userdebug</span><br><span class="line">     48. pixel3_mainline-userdebug</span><br><span class="line">     49. poplar-eng</span><br><span class="line">     50. poplar-user</span><br><span class="line">     51. poplar-userdebug</span><br><span class="line">     52. qemu_trusty_arm64-userdebug</span><br><span class="line">     53. silvermont-eng</span><br><span class="line">     54. uml-userdebug</span><br><span class="line">     55. yukawa-userdebug</span><br><span class="line">     56. yukawa_sei510-userdebug</span><br><span class="line"></span><br><span class="line">Which would you like? [aosp_arm-eng]</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">意思就是要你选择编译目标的格式，编译目标的格式组成为BUILD-BUILDTYPE，比如 aosp_arm-eng 的BUILD为aosp_arm，BUILDTYPE为eng。其中BUILD表示编译出的镜像可以运行在什么环境，aosp代表Android开源项目，arm表示系统是运行在arm架构的处理器上。
+    更多参考<a target="_blank" rel="noopener" href="https://source.android.google.cn/source/running.html#selecting-device-build">官方文档</a>。BUILDTYPE 指的是编译类型，有以下三种：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- user：用来正式发布到市场的版本，权限受限，如没有 root 权限，不能 dedug，adb默认处于停用状态。</span><br><span class="line">- userdebug：在user版本的基础上开放了 root 权限和 debug 权限，adb默认处于启用状态。一般用于调试真机。</span><br><span class="line">- eng：开发工程师的版本，拥有最大的权限(root等)，具有额外调试工具的开发配置。一般用于模拟器。</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">如果没有Nexus设备，只想编译完后运行在模拟器查看，那么BUILD可以选择aosp_x86，BUILDTYPE选择eng，Which would you like? [aosp_arm-eng] 后面直接输入对应序号30就可以了。也可以直接指定编译的目标或者序号(不同的系统版本，序号的对应会有差别，建议不要直接用序号）：
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lunch aosp_x86-eng</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">lunch 30</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><h5 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h5></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">m -j12  2&gt;&amp;1 | tee build.log</span><br></pre></td></tr></table></figure>
+
+</p><p style="text-indent:2em">通过-jN参数来设置编译的并行任务数，以提高编译速度，这里N值最好选在核数到2倍核数之间。编译成功后会在 out/target/product/generic_x86/目录生成了三个重要的镜像文件： system.img、userdata.img、ramdisk.img。大概介绍着三个镜像文件：</p>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- system.img：系统镜像,里面包含了Android系统主要的目录和文件,通过init.c进行解析并mount挂载到/system目录下。</span><br><span class="line">- userdata.img：用户镜像,是Android系统中存放用户数据的,通过init.c进行解析并mount挂载到/data目录下。</span><br><span class="line">- ramdisk.img：根文件系统镜像,包含一些启动Android系统的重要文件，比如init.rc。</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><h5 id="运行模拟器"><a href="#运行模拟器" class="headerlink" title="运行模拟器"></a>运行模拟器</h5></li>
+</ol>
+<p style="text-indent:2em">在编译完成之后,就可以通过以下命令运行Android虚拟机了，命令如下:
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如果是在编译完后运行虚拟机，由于之前已经执行过source和lunch命令了，可以直接运行：</span></span><br><span class="line">emulator</span><br><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">lunch 30</span><br><span class="line">emulator</span><br></pre></td></tr></table></figure>
+
+</p><h4 id="源码单编"><a href="#源码单编" class="headerlink" title="源码单编"></a>源码单编</h4><ul>
+<li>make命令来进行编译</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译 system.img</span></span><br><span class="line">lunch qssi-userdebug</span><br><span class="line">make &lt;system related images&gt;</span><br><span class="line"><span class="comment">#编译除system.img外的其他img</span></span><br><span class="line">lunch xx-userdebug</span><br><span class="line">make &lt;non-system images&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>高通提供的build.sh脚本进行编译</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编译所有img，包括system和其它img</span></span><br><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">lunch XX-userdebug</span><br><span class="line">./build.sh dist -j32</span><br><span class="line"><span class="comment"># 编译system.img，产物在qssi目录下</span></span><br><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">lunch xx-userdebug</span><br><span class="line">./build.sh dist qssi_only -j32</span><br><span class="line"><span class="comment"># 编译super.img</span></span><br><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">lunch xx-userdebug</span><br><span class="line">./build.sh dist merge_only -j32</span><br><span class="line"><span class="comment"># 编译其它img，例如vendorimage，如果不指定会编译其它所有img，产物在XX目录下</span></span><br><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">lunch xx-userdebug</span><br><span class="line">./build.sh vendorimage dist target_only -j32</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>动态分区刷机的方法</p>
+<p style="text-indent:2em">Q版本将system和vendor分区合并为super分区，无法通过adb reboot bootloader模式单独刷动态分区里面的img，例如system,vendor,product,odm，只能刷super.img和其他的。但是fastboot模式下可以单独刷动态分区里面的img，推荐进入fastboot模式刷机:</p></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">adb reboot fastboot</span><br><span class="line">fastboot getvar is-userspace</span><br><span class="line"><span class="comment"># is-userspace: yes</span></span><br><span class="line"><span class="comment"># Finished. Total time: 0.002s</span></span><br><span class="line">fastboot flash vendor vendor.img</span><br><span class="line">fastboot flash system system.img</span><br><span class="line">fastboot flash vbmeta vbmeta.img</span><br><span class="line">fastboot flash vbmeta_system vbmeta_system.img</span><br><span class="line"><span class="comment"># fastbootd是用户空间的代码，因为动态的逻辑分区只能在应用空间识别</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># fastboot刷机出现权限问题，需要将fastboot的所有者属性改成root</span></span><br><span class="line">sudo chown root:root fastboot</span><br><span class="line">sudo chmod +s fastboot</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>动态分区</p>
+<p style="text-indent:2em">编译包中，我们找不到了对应的system,vendor等img文件，但是多了一个super.img，system,vendor,product,odm合并为super分区，这个就是动态分区了。Google在android Q中加入了动态分区，为了在OTA的时候能够灵活创建分区和修改分区大小，将system,vendor,odm,product合并成super分区，并在super分区上预留出一定量的free space，这样就可以动态调整这些分区的大小，解决了OTA的时候分区不足，以及调整分区的风险。</p>
+
+<p><img src="/.top//%E5%8A%A8%E6%80%81%E5%88%86%E5%8C%BA.png" alt="动态分区"></p>
+<p><img src="/.top//super.img.layout.png" alt="super.img.layout"></p>
+<p style="text-indent:2em">当ota升级之后，需要重新调整分区大小：</p>
+
+<p><img src="/.top//ota%E5%8D%87%E7%BA%A7%E8%B0%83%E6%95%B4%E5%88%86%E5%8C%BA%E5%A4%A7%E5%B0%8F.png" alt="ota升级调整分区大小"></p>
+</li>
+<li><p>qssi(Qualcomm Single System Image)</p>
+<p style="text-indent:2em">为了配合project treble，将系统与odm相关的解耦，需要单独编译system.img和其他img。而编译system image的时候需要lunch qssi，而编译其他分区的时候需要lunch target。引入qssi为解决Android碎片化问题，把system.img和vendor.img进一步拆分。</p></li>
+</ul>
+<p>Android源码工程默认不包含Linux Kernel代码，而是使用预先编译好的内核(/prebuilts/qemu-kernel/[cpu架构]/kernel-qemu文件)。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/11/Android-Camera-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8D%81%E4%BA%8C-%E6%89%8B%E6%9C%BA%E7%9B%B8%E6%9C%BA%E7%9A%84%E6%9C%AA%E6%9D%A5%E4%B8%8E%E5%8F%91%E5%B1%95/" rel="prev" title="Android Camera 体系结构十二 手机相机的未来与发展">
+                  <i class="fa fa-chevron-left"></i> Android Camera 体系结构十二 手机相机的未来与发展
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/15/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80/" rel="next" title="Android Q 编译原理之零 序言">
+                  Android Q 编译原理之零 序言 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概述在上一节中，我们知道了HwServiceManager的启动过程，注册、获取服务的处理细节。服务的信息都存在于一个mServiceMap的map容器中。mServiceMap对应的key为package interface名称，例如&quot;android.hidl.manager@1.0::IServiceManager&quot;， 对应的value为一个PackageInterfaceMap结构体，其中包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android HwBinder通信原理之六 Native层HIDL服务的注册原理">
+<meta property="og:url" content="https://luojianwei.top/2021/07/08/Android-HwBinder%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E4%B9%8B%E5%85%AD-Native%E5%B1%82HIDL%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%B3%A8%E5%86%8C%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="概述在上一节中，我们知道了HwServiceManager的启动过程，注册、获取服务的处理细节。服务的信息都存在于一个mServiceMap的map容器中。mServiceMap对应的key为package interface名称，例如&quot;android.hidl.manager@1.0::IServiceManager&quot;， 对应的value为一个PackageInterfaceMap结构体，其中包">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luojianwei.top/.top//Native%E5%B1%82%E7%9A%84HwBinder%E6%9E%B6%E6%9E%84.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//IPCThreadState.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//IDemo%E7%9A%84HIDL%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//%E8%B0%83%E7%94%A8%E6%A0%88.png">
+<meta property="article:published_time" content="2021-07-08T03:04:19.000Z">
+<meta property="article:modified_time" content="2021-07-08T03:06:25.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luojianwei.top/.top//Native%E5%B1%82%E7%9A%84HwBinder%E6%9E%B6%E6%9E%84.jpg">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/07/08/Android-HwBinder%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E4%B9%8B%E5%85%AD-Native%E5%B1%82HIDL%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%B3%A8%E5%86%8C%E5%8E%9F%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;07&#x2F;08&#x2F;Android-HwBinder%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E4%B9%8B%E5%85%AD-Native%E5%B1%82HIDL%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%B3%A8%E5%86%8C%E5%8E%9F%E7%90%86&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;07&#x2F;08&#x2F;Android-HwBinder通信原理之六-Native层HIDL服务的注册原理&#x2F;&quot;,&quot;title&quot;:&quot;Android HwBinder通信原理之六 Native层HIDL服务的注册原理&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android HwBinder通信原理之六 Native层HIDL服务的注册原理 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Native%E5%B1%82%E7%9A%84HwBinder%E6%9E%B6%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">Native层的HwBinder架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E7%B1%BB%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">重要类分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ProcessState"><span class="nav-number">3.1.</span> <span class="nav-text">ProcessState</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IPCThreadState"><span class="nav-number">3.2.</span> <span class="nav-text">IPCThreadState</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BpHwBinder"><span class="nav-number">3.3.</span> <span class="nav-text">BpHwBinder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BHwBinder"><span class="nav-number">3.4.</span> <span class="nav-text">BHwBinder</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IDemo%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C"><span class="nav-number">4.</span> <span class="nav-text">IDemo的服务注册</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#IDemo%E7%9A%84HIDL%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B%E5%A6%82%E4%B8%8B%E5%9B%BE%E6%89%80%E7%A4%BA%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">IDemo的HIDL服务注册流程如下图所示：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E6%A0%88%E5%A6%82%E4%B8%8B"><span class="nav-number">4.2.</span> <span class="nav-text">调用栈如下</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/07/08/Android-HwBinder%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E4%B9%8B%E5%85%AD-Native%E5%B1%82HIDL%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%B3%A8%E5%86%8C%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android HwBinder通信原理之六 Native层HIDL服务的注册原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-08 11:04:19 / 修改时间：11:06:25" itemprop="dateCreated datePublished" datetime="2021-07-08T11:04:19+08:00">2021-07-08</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p style="text-indent:2em">在上一节中，我们知道了HwServiceManager的启动过程，注册、获取服务的处理细节。服务的信息都存在于一个mServiceMap的map容器中。mServiceMap对应的key为package interface名称，例如"android.hidl.manager@1.0::IServiceManager"， 对应的value为一个PackageInterfaceMap结构体，其中包含了lookup()、insertService()等方法，service的对象最终被插入到InstanceMap这个map容器中。</p><p style="text-indent:2em">前面我们已经写了一个HIDL实例，来展示了Native层的服务注册和获取调用流程，但是Native层的服务注册、获取流程是如何实现的，现在还不清楚。这一节，我们深度分析Native层的HAL服务的注册和获取。</p>
+
+<h3 id="Native层的HwBinder架构"><a href="#Native层的HwBinder架构" class="headerlink" title="Native层的HwBinder架构"></a>Native层的HwBinder架构</h3><p><img src="/.top//Native%E5%B1%82%E7%9A%84HwBinder%E6%9E%B6%E6%9E%84.jpg" alt="Native层的HwBinder架构"></p>
+<h3 id="重要类分析"><a href="#重要类分析" class="headerlink" title="重要类分析"></a>重要类分析</h3><p style="text-indent:2em">在真正看代码前，需要先了解两个类：ProcessState和IPCThreadState，这两个很重要类的概念。</p>
+
+<h4 id="ProcessState"><a href="#ProcessState" class="headerlink" title="ProcessState"></a>ProcessState</h4><p style="text-indent:2em">ProcessState从字面意思可以理解是表示“进程状态”代表了这个进程的行为，在Android中，每个进程都是独立的，所以每个进程都要有一个“进程状态”--ProcessState对象。一个进程中有很多个线程，不能每个线程都来new一个新的ProcessState()，在Binder通信机制中，ProcessState使用了单例模式，即一个进程只有个ProcessState对象，采用单例模式后，每个线程都可以使用同一个ProcessState来和Binder驱动通信。ProcessState作为进程状态的记录器，主要用来打开Binder驱动获取句柄，mmap申请一块(1M-8K)的内存空间，设置Binder线程最大个数。</p>
+
+<h4 id="IPCThreadState"><a href="#IPCThreadState" class="headerlink" title="IPCThreadState"></a>IPCThreadState</h4><p style="text-indent:2em">IPCThreadState从字面意思可以理解是表示“进程间通信的线程状态”，有了进程状态后，自然需要有线程状态。ProcessState代表了进程，IPCThreadState代表了线程。Android系统中有很多进程，进程间相互隔离，每个进程内部又有很多线程，线程之间也是相互独立的。所以说一个进程会存在很多个线程，每个线程都有自己的“线程状态”--IPCThreadState对象。这个对象存储在线程的本地存储区(TLS:Thread local storage)中，每个线程都拥有自己的TLS，并且是私有空间，线程之间不会共享。IPCThreadState对象根据key:gTLS去进行存储。通过pthread_getspecific/pthread_setspecific函数可以获取/设置这些空间中的内容。IPCThreadState负责与Binder驱动进行数据交互。</p>
+
+<p><img src="/.top//IPCThreadState.jpg" alt="IPCThreadState"></p>
+<h4 id="BpHwBinder"><a href="#BpHwBinder" class="headerlink" title="BpHwBinder"></a>BpHwBinder</h4><p style="text-indent:2em">BpHwBinder展开后就是Binder Proxy，也就是Binder代理的含义。BpHwBinder 是客户端用来与服务交互的代理类，负责实现跨进程传输的传输机制，不关心具体的传输内容。通信功能由其它类和函数实现，但由于这些类和函数被BpHwBinder代理，所以客户端需要通过BpHwBinder来发送Binder通信数据。
+
+
+</p><h4 id="BHwBinder"><a href="#BHwBinder" class="headerlink" title="BHwBinder"></a>BHwBinder</h4><p style="text-indent:2em">BHwBinder代表服务端，可以理解为服务的Binder实体，当服务端从Binder驱动中读取到数据后，由BHwBinder类进行处理。</p>
+
+<h3 id="IDemo的服务注册"><a href="#IDemo的服务注册" class="headerlink" title="IDemo的服务注册"></a>IDemo的服务注册</h3><h4 id="IDemo的HIDL服务注册流程如下图所示："><a href="#IDemo的HIDL服务注册流程如下图所示：" class="headerlink" title="IDemo的HIDL服务注册流程如下图所示："></a>IDemo的HIDL服务注册流程如下图所示：</h4><p><img src="/.top//IDemo%E7%9A%84HIDL%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E6%B5%81%E7%A8%8B.jpg" alt="IDemo的HIDL服务注册流程"></p>
+<h4 id="调用栈如下"><a href="#调用栈如下" class="headerlink" title="调用栈如下"></a>调用栈如下</h4><p><img src="/.top//%E8%B0%83%E7%94%A8%E6%A0%88.png" alt="调用栈"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/08/Android-HwBinder%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E4%B9%8B%E4%BA%94-HwServiceManager%E7%AF%87/" rel="prev" title="Android HwBinder通信原理之五 HwServiceManager篇">
+                  <i class="fa fa-chevron-left"></i> Android HwBinder通信原理之五 HwServiceManager篇
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/08/Android-HwBinder%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%83-Native%E5%B1%82HIDL%E6%9C%8D%E5%8A%A1%E7%9A%84%E8%8E%B7%E5%8F%96%E5%8E%9F%E7%90%86/" rel="next" title="Android HwBinder通信原理之七 Native层HIDL服务的获取原理">
+                  Android HwBinder通信原理之七 Native层HIDL服务的获取原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

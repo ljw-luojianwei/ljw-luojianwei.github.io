@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="概述上一节，我们理清了编译环境初始化的过程，环境变量已经加载，并配置了编译目标，接下来执行一个make命令我们就能够进行编译。这一节，我们探讨输入 make 之后是怎么完成编译的。  Android系统的编译历程Google在Android 7.0之后，引入了Soong构建系统，旨在取代 GNU Make的编译，它利用Kati GNU Make克隆工具和Ninja构建系统组件来加速Android的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Q 编译原理之三 make编译过程">
+<meta property="og:url" content="https://luojianwei.top/2021/07/08/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%89-make%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="概述上一节，我们理清了编译环境初始化的过程，环境变量已经加载，并配置了编译目标，接下来执行一个make命令我们就能够进行编译。这一节，我们探讨输入 make 之后是怎么完成编译的。  Android系统的编译历程Google在Android 7.0之后，引入了Soong构建系统，旨在取代 GNU Make的编译，它利用Kati GNU Make克隆工具和Ninja构建系统组件来加速Android的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luojianwei.top/.top//Android%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%BC%96%E8%AF%91%E5%8E%86%E7%A8%8B.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//Soong%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%AE%B6%E6%97%8F%E6%88%90%E5%91%98.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//soong%E6%9E%84%E5%BB%BA.jpg">
+<meta property="og:image" content="https://luojianwei.top/.top//soong_ui.bash%E8%B0%83%E7%94%A8%E6%A0%88.png">
+<meta property="article:published_time" content="2021-07-08T02:43:19.000Z">
+<meta property="article:modified_time" content="2021-07-08T02:45:11.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luojianwei.top/.top//Android%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%BC%96%E8%AF%91%E5%8E%86%E7%A8%8B.jpg">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/07/08/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%89-make%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;07&#x2F;08&#x2F;Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%89-make%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;07&#x2F;08&#x2F;Android-Q-编译原理之三-make编译过程&#x2F;&quot;,&quot;title&quot;:&quot;Android Q 编译原理之三 make编译过程&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android Q 编译原理之三 make编译过程 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%BC%96%E8%AF%91%E5%8E%86%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">Android系统的编译历程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Soong%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%AE%B6%E6%97%8F%E6%88%90%E5%91%98"><span class="nav-number">3.</span> <span class="nav-text">Soong编译系统家族成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#make%E7%9A%84%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">4.</span> <span class="nav-text">make的流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#make"><span class="nav-number">5.</span> <span class="nav-text">make()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#soong-ui-bash"><span class="nav-number">6.</span> <span class="nav-text">soong_ui.bash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#soong-ui-bash%E8%B0%83%E7%94%A8%E6%A0%88"><span class="nav-number">6.1.</span> <span class="nav-text">soong_ui.bash调用栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#soong-ui-bash%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%EF%BC%9A"><span class="nav-number">6.2.</span> <span class="nav-text">soong_ui.bash执行过程：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/07/08/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%B8%89-make%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android Q 编译原理之三 make编译过程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-08 10:43:19 / 修改时间：10:45:11" itemprop="dateCreated datePublished" datetime="2021-07-08T10:43:19+08:00">2021-07-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Compiler/" itemprop="url" rel="index"><span itemprop="name">Compiler</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p style="text-indent:2em">上一节，我们理清了编译环境初始化的过程，环境变量已经加载，并配置了编译目标，接下来执行一个make命令我们就能够进行编译。这一节，我们探讨输入 make 之后是怎么完成编译的。</p>
+
+<h3 id="Android系统的编译历程"><a href="#Android系统的编译历程" class="headerlink" title="Android系统的编译历程"></a>Android系统的编译历程</h3><p style="text-indent:2em">Google在Android 7.0之后，引入了Soong构建系统，旨在取代 GNU Make的编译，它利用Kati GNU Make克隆工具和Ninja构建系统组件来加速Android的构建。Make构建系统得到了广泛的支持和使用，但在Android层面变得缓慢、容易出错、无法扩展且难以测试。Soong构建系统正好提供了Android Build所需的灵活性。因此在Android10.0 上，make执行后，我们走的是soong构建环境。</p>
+
+<p><img src="/.top//Android%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%BC%96%E8%AF%91%E5%8E%86%E7%A8%8B.jpg" alt="Android系统的编译历程"></p>
+<h3 id="Soong编译系统家族成员"><a href="#Soong编译系统家族成员" class="headerlink" title="Soong编译系统家族成员"></a>Soong编译系统家族成员</h3><p style="text-indent:2em"> 从下图可知，mk文件被编译成了out/build-aosp_arm.ninja和out/build-aosp_arm-package.ninja，bp文件被编译成了out/soong/build.ninja，这三个ninja文件又被合并成out/combined-aosp_arm.ninja，最终通过ninja工具来编译out/combined-aosp_arm.ninja完成最终的编译。</p>
+
+<p><img src="/.top//Soong%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%AE%B6%E6%97%8F%E6%88%90%E5%91%98.jpg" alt="Soong编译系统家族成员"></p>
+<h3 id="make的流程图"><a href="#make的流程图" class="headerlink" title="make的流程图"></a>make的流程图</h3><p style="text-indent:2em">soong构建的流程图如下图所示：</p>
+
+<p><img src="/.top//soong%E6%9E%84%E5%BB%BA.jpg" alt="img"></p>
+<h3 id="make"><a href="#make" class="headerlink" title="make()"></a>make()</h3><p style="text-indent:2em">执行完make命令后，会调用envsetup.sh的make()函数进行处理。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">make</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    _wrap_build $(get_make_command <span class="string">&quot;<span class="variable">$@</span>&quot;</span>) <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em">从get_make_command()可以看出，make后，真正然后执行<b>编译的入口是：build/soong/soong_ui.bash</b></p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">get_make_command</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># If we&#x27;re in the top of an Android tree, use soong_ui.bash instead of make</span></span><br><span class="line">    <span class="keyword">if</span> [ -f build/soong/soong_ui.bash ]; <span class="keyword">then</span></span><br><span class="line">        <span class="comment"># Always use the real make if -C is passed in</span></span><br><span class="line">        <span class="keyword">for</span> arg <span class="keyword">in</span> <span class="string">&quot;<span class="variable">$@</span>&quot;</span>; <span class="keyword">do</span></span><br><span class="line">            <span class="keyword">if</span> [[ <span class="variable">$arg</span> == -C* ]]; <span class="keyword">then</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="built_in">command</span> make</span><br><span class="line">                <span class="built_in">return</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        <span class="keyword">done</span></span><br><span class="line">        <span class="built_in">echo</span> build/soong/soong_ui.bash --make-mode</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="built_in">command</span> make</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="soong-ui-bash"><a href="#soong-ui-bash" class="headerlink" title="soong_ui.bash"></a>soong_ui.bash</h3><h4 id="soong-ui-bash调用栈"><a href="#soong-ui-bash调用栈" class="headerlink" title="soong_ui.bash调用栈"></a>soong_ui.bash调用栈</h4><p><img src="/.top//soong_ui.bash%E8%B0%83%E7%94%A8%E6%A0%88.png" alt="img"></p>
+<h4 id="soong-ui-bash执行过程："><a href="#soong-ui-bash执行过程：" class="headerlink" title="soong_ui.bash执行过程："></a>soong_ui.bash执行过程：</h4><ol>
+<li>source  microfactory.bash，得到一些函数命令， 例如：soong_build_go</li>
+<li>编译/build/soong/cmd/soong_ui/main.go，生成 out/soong_ui这个可执行程序</li>
+<li>执行命令：out/soong_ui –make-mode ，执行了make命令，会把”build/make/core/main.mk” 加到构建环境中，同</li>
+<li>启动kati、blueprint-soong、ninja的编译。</li>
+</ol>
+<p style="text-indent:2em">接下来根据调用栈的流程，来详细分析编译的过程。</p>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/08/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E5%8D%81%E4%B8%80-Soong-%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F/" rel="prev" title="Android Q 编译原理十一 Soong 编译系统">
+                  <i class="fa fa-chevron-left"></i> Android Q 编译原理十一 Soong 编译系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/08/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E5%9B%9B-Image%E6%89%93%E5%8C%85%E6%B5%81%E7%A8%8B/" rel="next" title="Android Q 编译原理之四 Image打包流程">
+                  Android Q 编译原理之四 Image打包流程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

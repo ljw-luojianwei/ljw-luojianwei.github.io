@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;luojianwei.top&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="关于：&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp AOSP(Android Open Source Project)是Google开放的Android开源项目。AOSP通俗来讲就是一个Android系统源码项目，通过它可以定制Android操作系统，国内手机厂商都是在此基础上开发的定制系统。因为墙的缘故，无法连接谷歌服务器获取AOSP源码，就从清华大学镜像站或者中科大镜像。  下载：&amp;nbsp&amp;nb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 源码管理之一 AOSP镜像下载">
+<meta property="og:url" content="https://luojianwei.top/2021/06/17/Android-%E6%BA%90%E7%A0%81%E7%AE%A1%E7%90%86%E4%B9%8B%E4%B8%80-AOSP%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD/index.html">
+<meta property="og:site_name" content="罗建伟的个人主页">
+<meta property="og:description" content="关于：&amp;nbsp&amp;nbsp&amp;nbsp&amp;nbsp AOSP(Android Open Source Project)是Google开放的Android开源项目。AOSP通俗来讲就是一个Android系统源码项目，通过它可以定制Android操作系统，国内手机厂商都是在此基础上开发的定制系统。因为墙的缘故，无法连接谷歌服务器获取AOSP源码，就从清华大学镜像站或者中科大镜像。  下载：&amp;nbsp&amp;nb">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-17T03:18:48.000Z">
+<meta property="article:modified_time" content="2021-06-23T09:59:10.000Z">
+<meta property="article:author" content="罗建伟的个人博客">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Tools">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://luojianwei.top/2021/06/17/Android-%E6%BA%90%E7%A0%81%E7%AE%A1%E7%90%86%E4%B9%8B%E4%B8%80-AOSP%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;luojianwei.top&#x2F;2021&#x2F;06&#x2F;17&#x2F;Android-%E6%BA%90%E7%A0%81%E7%AE%A1%E7%90%86%E4%B9%8B%E4%B8%80-AOSP%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;17&#x2F;Android-源码管理之一-AOSP镜像下载&#x2F;&quot;,&quot;title&quot;:&quot;Android 源码管理之一 AOSP镜像下载&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Android 源码管理之一 AOSP镜像下载 | 罗建伟的个人主页</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">罗建伟的个人主页</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">明确自己的内心所求，才能更好地解决问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/home/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%B1%82packages%E9%83%A8%E5%88%86"><span class="nav-number">1.</span> <span class="nav-text">应用层packages部分</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6%E5%B1%82"><span class="nav-number"></span> <span class="nav-text">应用框架层</span></a></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">罗建伟的个人博客</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://luojianwei.top/2021/06/17/Android-%E6%BA%90%E7%A0%81%E7%AE%A1%E7%90%86%E4%B9%8B%E4%B8%80-AOSP%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="罗建伟的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="罗建伟的个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android 源码管理之一 AOSP镜像下载
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-17 11:18:48" itemprop="dateCreated datePublished" datetime="2021-06-17T11:18:48+08:00">2021-06-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-23 17:59:10" itemprop="dateModified" datetime="2021-06-23T17:59:10+08:00">2021-06-23</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p style="text-indent:2em"><b>关于：</b>&nbsp&nbsp&nbsp&nbsp AOSP(Android Open Source Project)是Google开放的<a target="_blank" rel="noopener" href="https://source.android.google.cn/" style="text-decoration:none">Android开源项目</a>。AOSP通俗来讲就是一个Android系统源码项目，通过它可以定制Android操作系统，国内手机厂商都是在此基础上开发的定制系统。因为墙的缘故，无法连接谷歌服务器获取AOSP源码，就从<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/AOSP/" style="text-decoration:none">清华大学镜像站</a>或者<a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/" style="text-decoration:none">中科大镜像</a>。</p>
+
+<p style="text-indent:2em"><b>下载：</b>&nbsp&nbsp&nbsp&nbsp因第一次同步数据量特别大，如果网络不稳定，中间失败就要从头再来了。所以使用镜像站提供的打包的 AOSP 镜像，为一个 tar 包，大约 100G(单文件)，这样就可以通过 HTTP(S) 的方式下载，该方法支持断点续传。初始化 tar 包下载地址：</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清大源，每月更新的初始化包</span></span><br><span class="line">wget -c -t 0 https://mirrors.tuna.tsinghua.edu.cn/aosp-monthly/aosp-latest.tar   <span class="comment"># 使用 wget -c 断点续传进行下载初始化包</span></span><br><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/aosp-monthly/aosp-latest.tar.md5 <span class="comment"># 下载初始化包校验值</span></span><br><span class="line"><span class="comment"># or </span></span><br><span class="line"><span class="comment"># 科大源，定时同步于清大源</span></span><br><span class="line">wget -c -t 0 https://mirrors.ustc.edu.cn/aosp-monthly/aosp-latest.tar</span><br><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/aosp-monthly/aosp-latest.tar.md5</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"><b>解压：</b>&nbsp&nbsp&nbsp&nbsp下载完成后，根据 checksum 的内容校验一下。接着解压：</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xvf aosp-latest.tar</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"><b>修改：</b>&nbsp&nbsp&nbsp&nbsp替换已有的 AOSP 源代码的 remote。更改为 
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改 .repo/manifests.git/config</span></span><br><span class="line"><span class="comment"># 将</span></span><br><span class="line">url = https://android.googlesource.com/platform/manifest</span><br><span class="line"><span class="comment"># 更改为清大源</span></span><br><span class="line">url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/manifest</span><br><span class="line"><span class="comment"># 或者 科大源</span></span><br><span class="line">url = git://mirrors.ustc.edu.cn/aosp/platform/manifest</span><br><span class="line"><span class="comment"># 如果由于某种原因不能通过 git 协议同步，则可以改为通过 HTTP 协议同步，不推荐使用 HTTP 协议同步，因为 HTTP 服务器不支持 repo sync 的 --depth 选项，可能导致部分仓库同步失败。</span></span><br><span class="line">url = http://mirrors.ustc.edu.cn/aosp/platform/manifest </span><br></pre></td></tr></table></figure>
+
+</p><p style="text-indent:2em"><b>同步：</b>&nbsp&nbsp&nbsp&nbsp由于所有代码都是从隐藏的 .repo 目录中 checkout 出来的，所以 tar 包只保留了 .repo 目录。因此解压后只有一个隐藏的 .repo 目录，需要再 repo sync 一遍可得到完整的目录。由于 AOSP 镜像造成CPU/内存负载过重，镜像站限制了并发数量，因此尽量选择流量较小时错峰同步，sync 的时候并发数不宜太高，否则会出现 503 错误，即-j后面的数字建议选择 4,由于 repo sync 命令默认使用 4 个并发连接，因此勿需使用 -j 参数增加并发连接数。
+</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> aosp <span class="comment"># 进入解压得到的 AOSP 工程目录，这时 ls 的话什么也看不到，因为只有一个隐藏的 .repo 目录</span></span><br><span class="line">.repo/repo/repo sync <span class="comment"># 正常同步一遍即可得到完整目录</span></span><br><span class="line"><span class="comment"># 或 </span></span><br><span class="line">.repo/repo/repo sync -l <span class="comment"># 仅checkout代码</span></span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"><b>内核：</b>&nbsp&nbsp&nbsp&nbsp AOSP源码中并不包括内核源码，需要单独下载，内核源码有很多版本，比如common是通用的Linux内核，msm是用于使用高通MSM芯片的Android设备，goldfish是用于Android模拟器的内核源码。</p>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://aosp.tuna.tsinghua.edu.cn/kernel/goldfish.git</span><br><span class="line">git <span class="built_in">clone</span> https://aosp.tuna.tsinghua.edu.cn/kernel/msm.git</span><br></pre></td></tr></table></figure>
+
+<p style="text-indent:2em"><b>工具：</b>&nbsp&nbsp&nbsp&nbsp Android源码包含数百个git库，光是下载这么多的git库就是一项繁重的任务，所以Google开发了<a target="_blank" rel="noopener" href="https://source.android.google.cn/setup/using-repo" style="text-decoration:none">repo</a>，它是用于管理Android版本库的一个工具，使用了Python对git进行了一定的封装，简化了对多个Git版本库的管理。仓库位于：aosp\.repo\repo\.git
+
+</p><p style="text-indent:2em"><b>含义：</b>&nbsp&nbsp&nbsp&nbsp AOSP代码目录含义
+
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>art</td>
+<td>全新的ART运行环境，ART虚拟机做为Dalvik虚拟机的替代,字节码翻译优化成机器码从运行时提早到安装,以空间换时间达到更流畅的体验.</td>
+</tr>
+<tr>
+<td>bionic</td>
+<td>C/C++运行时库,在NDK程序中很大一部分调用就是这里的程序</td>
+</tr>
+<tr>
+<td>bootable</td>
+<td>启动引导相关代码,用于Android装载和启动程序,其中就包括bootloader和recovery.bootloader是Android中唯一在Linux内核之前执行的程序.通过这段程序可以初始化硬件,建立内存控件的映射图等,总之,bootloader就是为Linux内核准备合适的运行环境.</td>
+</tr>
+<tr>
+<td>build</td>
+<td>存放系统编译规则及generic等基础开发包配置,用于编译Android源代码以及构建system.img，ramdisk.img等文件的工具.</td>
+</tr>
+<tr>
+<td>compatibility</td>
+<td>Android兼容性计划</td>
+</tr>
+<tr>
+<td>cts</td>
+<td>Android兼容性测试套件标准</td>
+</tr>
+<tr>
+<td>dalvik</td>
+<td>dalvik JAVA虚拟机</td>
+</tr>
+<tr>
+<td>developers</td>
+<td>开发者目录,展现了当前版本的新特性</td>
+</tr>
+<tr>
+<td>development</td>
+<td>应用程序开发相关,示例以及开发工具 主要是给系统开发者使用</td>
+</tr>
+<tr>
+<td>device</td>
+<td>设备相关配置,各品牌手机在硬件上会有差别，厂商会对源码进行定制 修改它的某些部分来配合自家硬件的特性</td>
+</tr>
+<tr>
+<td>external</td>
+<td>android使用的一些开源模组相关文件</td>
+</tr>
+<tr>
+<td>frameworks</td>
+<td>应用程序核心框架，Android系统核心部分，由Java和C++编写</td>
+</tr>
+<tr>
+<td>hardware</td>
+<td>主要是硬件抽象层的代码，部分厂家开源的硬解适配层HAL代码</td>
+</tr>
+<tr>
+<td>kernel</td>
+<td>Android Linux 内核，，不过Android默认不提供，需要单独下载</td>
+</tr>
+<tr>
+<td>libcore</td>
+<td>Java核心库相关文件，包括java api的源码</td>
+</tr>
+<tr>
+<td>libnativehelper</td>
+<td>动态库，实现JNI库的基础</td>
+</tr>
+<tr>
+<td>ndk</td>
+<td>NDK相关代码，帮助开发人员在应用程序中嵌入C/C++代码</td>
+</tr>
+<tr>
+<td>out</td>
+<td>编译完成后代码输出在此目录</td>
+</tr>
+<tr>
+<td>packages</td>
+<td>应用程序包</td>
+</tr>
+<tr>
+<td>pdk</td>
+<td>Plug Development Kit 的缩写，本地开发套件，google减小碎片化的东西</td>
+</tr>
+<tr>
+<td>platform_testing</td>
+<td>平台测试</td>
+</tr>
+<tr>
+<td>prebuilts</td>
+<td>x86和arm架构下预编译好的一些资源，包括模拟器,内核文件</td>
+</tr>
+<tr>
+<td>sdk</td>
+<td>在开发环境中使用的工具，如ddms，draw9path，sdkmanager，sdk和模拟器</td>
+</tr>
+<tr>
+<td>system</td>
+<td>底层文件系统库、应用和组件 构成 Android的基本系统</td>
+</tr>
+<tr>
+<td>test</td>
+<td></td>
+</tr>
+<tr>
+<td>toolchain</td>
+<td>工具链文件</td>
+</tr>
+<tr>
+<td>tools</td>
+<td>工具文件</td>
+</tr>
+<tr>
+<td>vendor</td>
+<td></td>
+</tr>
+<tr>
+<td>Android.bp</td>
+<td>Android7.0开始代替Android.mk文件，它是告诉ndk将jni代码编译成动态库的一个脚本</td>
+</tr>
+<tr>
+<td>Makefile</td>
+<td>全局Makefile文件，用来定义编译规则</td>
+</tr>
+</tbody></table>
+</p><h5 id="应用层packages部分"><a href="#应用层packages部分" class="headerlink" title="应用层packages部分"></a>应用层packages部分</h5><p>应用层位于整个Android系统的最上层，开发者开发的应用程序以及系统内置的应用程序都是在应用层。源码根目录中的packages目录对应着系统应用层。它的目录结构：</p>
+<table>
+<thead>
+<tr>
+<th>packages目录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>apps</td>
+<td>核心应用程序</td>
+</tr>
+<tr>
+<td>experimental</td>
+<td>第三方应用程序</td>
+</tr>
+<tr>
+<td>inputmethods</td>
+<td>输入法目录</td>
+</tr>
+<tr>
+<td>modules</td>
+<td></td>
+</tr>
+<tr>
+<td>providers</td>
+<td>内容提供者目录</td>
+</tr>
+<tr>
+<td>screensavers</td>
+<td>屏幕保护</td>
+</tr>
+<tr>
+<td>services</td>
+<td>通信服务</td>
+</tr>
+<tr>
+<td>wallpapers</td>
+<td>墙纸</td>
+</tr>
+</tbody></table>
+<h2 id="应用框架层"><a href="#应用框架层" class="headerlink" title="应用框架层"></a>应用框架层</h2><p>应用框架层是系统的核心部分，一方面向上提供接口给应用层调用，另一方面向下与C/C++程序库以及硬件抽象层等进行衔接。其中目录结构如下：</p>
+<ul>
+<li>av：多媒体框架</li>
+<li>base：Android源码的主要核心目录</li>
+<li>compile：编译相关</li>
+<li>ex：文件解析器</li>
+<li>hardware：硬件适配接口</li>
+<li>layoutlib：布局相关</li>
+<li>minikin：Android原生字体，连体字效果</li>
+<li>ml：机器学习</li>
+<li>multidex：多dex加载器</li>
+<li>native：native实现</li>
+<li>opt：一些软件</li>
+<li>rs：Render Script，可创建3D接口</li>
+<li>support：framework支持文件</li>
+<li>wilhelm：基于Khronos的OpenSL ES/OpenMAX AL的audio/multimedia实现</li>
+</ul>
+<p>其中base目录中是应用框架层的主要核心代码，目录结构如下：</p>
+<ul>
+<li>apct-tests：性能优化测试</li>
+<li>api：android应用框架层声明类、属性和资源</li>
+<li>cmds：android系统启动时用到的commands</li>
+<li>core：framework的核心框架组件</li>
+<li>data：android下的资源(字体、声音、视频、软盘等)</li>
+<li>docs：android项目说明</li>
+<li>drm：实现权限管理，数字内容解密等模块的工作</li>
+<li>graphics：图像渲染模块</li>
+<li>keystore：秘钥库</li>
+<li>libs：库信息(界面、存储、USB)</li>
+<li>location：位置信息</li>
+<li>media：手机媒体管理(音频、视频等)</li>
+<li>native：本地方法实现(传感器、输入、界面、窗体)</li>
+<li>nfc-extras：近场通讯</li>
+<li>obex：蓝牙</li>
+<li>opengl：2D和3D图形绘制</li>
+<li>packages：框架层的实现(界面、服务、存储)</li>
+<li>proto：协议框架</li>
+<li>rs：资源框架</li>
+<li>samples：例子程序</li>
+<li>sax：xml解析器</li>
+<li>services：各种服务程序</li>
+<li>telecomm：telecomm通信框架</li>
+<li>telephony：电话通讯框架</li>
+<li>tests：各种测试</li>
+<li>vr：虚拟现实相关</li>
+<li>wifi：wifi模块</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Tools/" rel="tag"># Tools</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/16/Android-Q-%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E4%B9%8B%E4%BA%8C-%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96/" rel="prev" title="Android Q 编译原理之二 编译环境初始化">
+                  <i class="fa fa-chevron-left"></i> Android Q 编译原理之二 编译环境初始化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/17/Android-%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E4%B9%8B%E9%9B%B6-%E5%BA%8F%E8%A8%80%E5%92%8C%E7%9B%AE%E5%BD%95/" rel="next" title="Android 系统启动之零 序言和目录">
+                  Android 系统启动之零 序言和目录 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">罗建伟的个人博客</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
